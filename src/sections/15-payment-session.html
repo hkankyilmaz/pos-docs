@@ -1,0 +1,79 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       ÖDEME OTURUMU (PAYMENT SESSION)
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-session" class="doc-section">
+    <span class="section-tag">Link İşlemleri</span>
+    <h2 class="section-title">Ödeme Oturumu (Payment Session)</h2>
+    <p class="section-desc">
+      Sunucu tarafında oluşturulan, tek kullanımlık ödeme bağlantısı. Müşteriye
+      <code>session_url</code> gönderilir; müşteri bu URL üzerinden kart bilgilerini girerek ödeme yapar.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>Oturum oluşturma endpoint'i <strong>X-API-Key + X-Hash</strong> doğrulaması gerektirir.
+      Hash hesaplaması için <a href="#hash">Hash Doğrulama</a> bölümüne bakın.</div>
+    </div>
+
+    <!-- Oturum oluştur -->
+    <h3 class="sub-title">Oturum Oluştur</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/sessions</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "amount": 250.00,
+  "currency": "TRY",
+  "order_id": "ORDER-SESSION-001",
+  "ok_url": "https://yoursite.com/payment/success",
+  "fail_url": "https://yoursite.com/payment/fail",
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  },
+  "metadata": {
+    "internal_ref": "REF-123"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "session_id": "sess_5lnohiu4pvokvzsu",
+    "session_url": "http://localhost:3002/api/v1/public/session/sess_5lnohiu4pvokvzsu",
+    "expires_at": "2026-03-04T12:01:08.797663+03:00"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>

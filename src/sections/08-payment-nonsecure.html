@@ -1,0 +1,95 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       NON-SECURE ÖDEME
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-nonsecure" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">NonSecure Ödeme</h2>
+    <p class="section-desc">
+      3D doğrulama olmaksızın gerçekleştirilen ödeme işlemidir. Yanıt senkron olarak döner.
+    </p>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">is_3d: false</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "Auth",
+  "order_id": "ORDER-67890",
+  "amount": 250.00,
+  "currency": "TRY",
+  "installment": 1,
+  "card_number": "4355084355084358",
+  "card_holder_name": "Jane Doe",
+  "exp_year": 2026,
+  "exp_month": 6,
+  "cvv": "000",
+  "is_3d": false,
+  "customer_info": {
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "email": "jane.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "order_id": "ORDER-67890",
+    "amount_info": {
+      "amount": 250.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 250.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 250.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İŞLEM BAŞARILI",
+      "message_en": "APPROVED",
+      "detail_tr": "İşlem başarıyla tamamlandı",
+      "detail_en": "Transaction successfully completed."
+    },
+    "bank_response": {
+      "code": "00",
+      "message": "000 ONAY KODU 091322",
+      "auth_code": "091322",
+      "rrn": "603125844346"
+    },
+    "date": "2024-01-15T14:32:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

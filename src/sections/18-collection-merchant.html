@@ -1,0 +1,281 @@
+
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       KOLEKSİYON – MERCHANT API KEY
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="collection-merchant" class="doc-section">
+    <span class="section-tag">Link İşlemleri</span>
+    <h2 class="section-title">Koleksiyon – Merchant API</h2>
+    <p class="section-desc">
+      Serbest tutarlı ödeme sayfaları yönetimi. API Key + Hash doğrulamasıyla kendi sisteminizden
+      koleksiyon oluşturup yönetebilirsiniz. Sadece kendi merchant'ınıza ait koleksiyonlar görünür.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">🔑</span>
+      <div>
+        Her istekte <code>X-API-Key</code> ve <code>X-Hash</code> header'ları zorunludur.
+        Hash hesaplama için <a href="#hash">Hash Doğrulama</a> bölümüne bakın.
+      </div>
+    </div>
+
+    <!-- Oluştur -->
+    <h3 class="sub-title">Koleksiyon Oluştur</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/merchant/collections</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "title": "Bağış Toplama",
+  "description": "Okul yararına bağış kampanyası",
+  "currency": "TRY",
+  "min_amount": 10.00,
+  "max_amount": 10000.00,
+  "expires_at": "2024-12-31T00:00:00Z",
+  "max_uses": 500,
+  "ok_url": "https://yoursite.com/donation/thanks",
+  "fail_url": "https://yoursite.com/donation/fail",
+  "require_3ds": false,
+  "allow_non_3ds": true
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "id": "c1d2e3f4-a5b6-7890-cdef-gh1234567890",
+    "merchant_name": "Örnek Mağaza",
+    "link_code": "COL-AB3CD9",
+    "link_url": "https://api.payment-link.example.com/api/v1/public/collections/COL-AB3CD9/page",
+    "title": "Bağış Toplama",
+    "description": "Okul yararına bağış kampanyası",
+    "currency": "TRY",
+    "min_amount": 10.00,
+    "max_amount": 10000.00,
+    "status": "ACTIVE",
+    "expires_at": "2024-12-31T00:00:00Z",
+    "max_uses": 500,
+    "used_count": 0,
+    "require_3ds": false,
+    "allow_non_3ds": true,
+    "qr_code_url": "https://api.payment-link.example.com/api/v1/merchant/collections/c1d2e3f4.../qr",
+    "created_at": "2024-01-15T10:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Listele -->
+    <h3 class="sub-title">Koleksiyonları Listele</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/merchant/collections</span>
+        <span class="endpoint-desc">Sadece kendi merchant'ınıza ait koleksiyonlar</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">GET /api/v1/merchant/collections?page=1&limit=20&status=ACTIVE HTTP/1.1
+X-API-Key: your-api-key
+X-Hash: {hash}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "data": [
+      {
+        "id": "c1d2e3f4-a5b6-7890-cdef-gh1234567890",
+        "merchant_name": "Örnek Mağaza",
+        "link_code": "COL-AB3CD9",
+        "link_url": "https://api.payment-link.example.com/api/v1/public/collections/COL-AB3CD9/page",
+        "title": "Bağış Toplama",
+        "description": "Okul yararına bağış kampanyası",
+        "currency": "TRY",
+        "min_amount": 10.00,
+        "max_amount": 10000.00,
+        "status": "ACTIVE",
+        "expires_at": "2024-12-31T00:00:00Z",
+        "max_uses": 500,
+        "used_count": 42,
+        "require_3ds": false,
+        "allow_non_3ds": true,
+        "qr_code_url": "https://api.payment-link.example.com/api/v1/merchant/collections/c1d2e3f4.../qr",
+        "created_at": "2024-01-15T10:00:00Z"
+      }
+    ],
+    "pagination": {
+      "total": 12,
+      "limit": 20,
+      "offset": 0,
+      "current_page": 1,
+      "total_pages": 1
+    }
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Getir -->
+    <h3 class="sub-title">Tekil Koleksiyon Getir</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/merchant/collections/:id</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "id": "c1d2e3f4-a5b6-7890-cdef-gh1234567890",
+    "merchant_name": "Örnek Mağaza",
+    "link_code": "COL-AB3CD9",
+    "link_url": "https://api.payment-link.example.com/api/v1/public/collections/COL-AB3CD9/page",
+    "title": "Bağış Toplama",
+    "description": "Okul yararına bağış kampanyası",
+    "currency": "TRY",
+    "min_amount": 10.00,
+    "max_amount": 10000.00,
+    "status": "ACTIVE",
+    "expires_at": "2024-12-31T00:00:00Z",
+    "max_uses": 500,
+    "used_count": 42,
+    "require_3ds": false,
+    "allow_non_3ds": true,
+    "qr_code_url": "https://api.payment-link.example.com/api/v1/merchant/collections/c1d2e3f4.../qr",
+    "created_at": "2024-01-15T10:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Durum güncelle -->
+    <h3 class="sub-title">Koleksiyon Durumunu Güncelle</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-put">PATCH</span>
+        <span class="endpoint-path">/api/v1/merchant/collections/:id/status</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{ "status": "INACTIVE" }</code></pre>
+            </div>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:8px;">Geçerli değerler: <code>ACTIVE</code>, <code>INACTIVE</code>, <code>EXPIRED</code></p>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "message": "Collection status updated successfully"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QR Kod -->
+    <h3 class="sub-title">QR Kod Görseli</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/merchant/collections/:id/qr</span>
+        <span class="endpoint-desc">PNG görsel döner</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP Headers</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">HTTP/1.1 200 OK
+Content-Type: image/png
+Content-Disposition: inline; filename="qr.png"
+
+&lt;binary PNG data&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

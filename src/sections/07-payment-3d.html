@@ -1,0 +1,105 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       3D SECURE ÖDEME
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-3d" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">3D Secure Ödeme</h2>
+    <p class="section-desc">
+      3D Secure işlemlerde müşteri, banka tarafından kimlik doğrulamasına yönlendirilir.
+      İlk yanıt olarak dönen <code>html</code> alanı sayfaya eklenmeli veya <code>html_url</code> adresine yönlendirme yapılmalıdır.
+      Ödeme sonucu, 3D doğrulama tamamlandıktan sonra <code>ok_url</code> veya <code>fail_url</code>'e
+      <strong>HTTP POST (form)</strong> olarak iletilir.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div><code>ok_url</code> ve <code>fail_url</code> gönderilmezse sistem varsayılan callback URL'ini kullanır.
+      Bu URL'lerde <code>application/x-www-form-urlencoded</code> POST verisi alacak şekilde hazır olunmalıdır.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">is_3d: true</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "Auth",
+  "order_id": "ORDER-12345",
+  "amount": 150.00,
+  "currency": "TRY",
+  "installment": 1,
+  "card_number": "4355084355084358",
+  "card_holder_name": "John Doe",
+  "exp_year": 2026,
+  "exp_month": 12,
+  "cvv": "000",
+  "is_3d": true,
+  "ok_url": "https://yoursite.com/payment/success",
+  "fail_url": "https://yoursite.com/payment/fail",
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "order_id": "ORDER-12345",
+    "html": "&lt;!DOCTYPE html&gt;&lt;html&gt;...3D Secure Form HTML...&lt;/html&gt;",
+    "html_url": "https://payment-hub.example.com/api/v1/vpos/payments/3d-secure/d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "date": "2024-01-15T14:30:00Z"
+  }
+}</code></pre>
+            </div>
+            <div class="callout callout-warning" style="margin-top:12px;">
+              <span class="callout-icon">⚠️</span>
+              <div>Bu yanıt yalnızca 3D formunu içerir; <code>gateway_response</code> ve <code>bank_response</code> bu aşamada dönmez.
+              Ödeme sonucu, 3D doğrulama tamamlandıktan sonra <code>ok_url</code> / <code>fail_url</code>'e iletilir.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">3D Secure Akış Diyagramı</h3>
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-lang">Flow</span>
+      </div>
+      <pre class="language-none"><code>1. Müşteri ödeme formunu doldurur
+2. Sizin sunucunuz → POST /api/v1/vpos/payments/payment  (is_3d: true, ok_url, fail_url)
+3. Payment Hub     → { success: true, payload: { transaction_id, html, html_url, ... } }
+4. Sizin sunucunuz → html içeriğini müşterinin tarayıcısında render eder
+5. Tarayıcı        → Bankanın 3D sayfasına yönlendirilir
+6. Müşteri         → OTP / 3D doğrulamayı tamamlar
+7. Payment Hub     → 3D sonucunu işler ve ödemi tamamlar
+8. Tarayıcı        → ok_url veya fail_url'e HTTP POST (application/x-www-form-urlencoded)</code></pre>
+    </div>
+  </section>

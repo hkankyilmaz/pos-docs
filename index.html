@@ -1,0 +1,3479 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sanal POS – API Dokümantasyonu</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230057b8'/><text y='22' x='6' font-size='18' font-weight='800' fill='white' font-family='Arial'>P</text></svg>" />
+  <!-- Prism.js syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- Overlay for mobile -->
+<div id="overlay" class="overlay"></div>
+
+<!-- ─── Header ────────────────────────────────────────────── -->
+<header id="header">
+  <button class="menu-toggle" id="menuToggle" aria-label="Menüyü aç/kapat">☰</button>
+  <a href="#intro" class="logo">
+    <div class="logo-icon">SP</div>
+    <span class="logo-text">Sanal <span>POS</span></span>
+  </a>
+  <div class="header-right">
+    <button id="search-btn" aria-label="Ara">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/></svg>
+      <span class="search-kbd">Ctrl+K</span>
+    </button>
+    <span class="version-badge">v1.0</span>
+  </div>
+</header>
+
+<!-- ─── Sidebar ───────────────────────────────────────────── -->
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Başlangıç</div>
+    <div class="sidebar-nav">
+      <a href="#intro" class="active">Giriş</a>
+      <a href="#access">Erişim Adresleri</a>
+      <a href="#auth">Kimlik Doğrulama</a>
+      <a href="#hash">Hash Doğrulama</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Parametreler</div>
+    <div class="sidebar-nav">
+      <a href="#request-params">Request Parametreleri</a>
+      <a href="#response-params">Response Parametreleri</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">İşlemler</div>
+    <div class="sidebar-nav">
+      <a href="#payment-3d">3D Secure Ödeme</a>
+      <a href="#payment-nonsecure">NonSecure Ödeme</a>
+      <a href="#payment-preauth">PreAuth &amp; Capture</a>
+      <a href="#payment-installment">Taksitli Ödeme</a>
+      <a href="#bin-query">BIN Sorgulama</a>
+      <a href="#payment-options">Taksit Oranları</a>
+      <a href="#void">İptal (Void)</a>
+      <a href="#refund">İade (Refund)</a>
+      <a href="#query">Sorgulama</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Link İşlemleri</div>
+    <div class="sidebar-nav">
+      <a href="#link-intro">Genel Bakış</a>
+      <a href="#payment-session">Ödeme Oturumu</a>
+      <a href="#link-merchant">Ödeme Linki</a>
+      <a href="#collection-merchant">Koleksiyon</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Referans</div>
+    <div class="sidebar-nav">
+      <a href="#test">Test İşlemleri</a>
+      <a href="#gateway-codes">Gateway Response Kodları</a>
+      <a href="#errors">Uygulama Hata Kodları</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── Main content ──────────────────────────────────────── -->
+<main id="main">
+
+  <!-- ═══════════════════════════════════════════════════════
+       GİRİŞ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="intro" class="doc-section">
+    <span class="section-tag">Giriş</span>
+    <h1 class="section-title">Sanal POS API Dokümantasyonu</h1>
+    <p class="section-desc">
+      Payment Hub, sanal POS entegrasyonlarını tek noktadan yönetmenizi sağlayan ödeme altyapı servisidir.
+      3D Secure, NonSecure, PreAuth/Capture ve taksitli ödeme işlemlerini destekler.
+      Tüm işlemler REST tabanlı JSON API üzerinden gerçekleştirilir.
+    </p>
+
+    <div class="tag-list">
+      <span class="tag">REST API</span>
+      <span class="tag">JSON</span>
+      <span class="tag">3D Secure</span>
+      <span class="tag">NonSecure</span>
+      <span class="tag">PreAuth</span>
+      <span class="tag">İptal / İade</span>
+      <span class="tag">Taksitli Ödeme</span>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       ERİŞİM ADRESLERİ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="access" class="doc-section">
+    <span class="section-tag">Erişim Adresleri</span>
+    <h2 class="section-title">Erişim Adresleri</h2>
+    <p class="section-desc">Tüm API istekleri HTTPS üzerinden yapılmalıdır.</p>
+
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="card-label">Production Base URL</div>
+        <div class="card-value"><a href="#">https://api.payment-hub.example.com</a></div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">API Version Prefix</div>
+        <div class="card-value">/api/v1</div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">HTTP Port</div>
+        <div class="card-value">443 (HTTPS)</div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Content-Type</div>
+        <div class="card-value">application/json</div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>Tüm endpoint'ler <code>/api/v1/vpos/payments/</code> prefix'i ile başlar. Tüm istek ve yanıtlar UTF-8 kodlu JSON formatındadır.</div>
+    </div>
+
+    <h3 class="sub-title">Endpoint Listesi</h3>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Metod</th>
+          <th>Endpoint</th>
+          <th>Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="method-badge method-post">POST</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/payment</span></td>
+          <td>Ödeme başlatma (3D / NonSecure / PreAuth)</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-post">POST</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/capture-pre-authorization</span></td>
+          <td>PreAuth capture işlemi</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-post">POST</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/refund</span></td>
+          <td>İade işlemi</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-post">POST</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/void</span></td>
+          <td>İptal işlemi</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-get">GET</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/query/{transaction_id}</span></td>
+          <td>İşlem sorgulama</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-get">GET</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/query-history/{transaction_id}</span></td>
+          <td>İşlem geçmişi sorgulama</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       KİMLİK DOĞRULAMA
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="auth" class="doc-section">
+    <span class="section-tag">Kimlik Doğrulama</span>
+    <h2 class="section-title">Kimlik Doğrulama</h2>
+    <p class="section-desc">
+      Tüm API istekleri için <code>X-API-Key</code> header'ı zorunludur.
+      Ayrıca her istekte hash imzası (<code>X-Hash</code>) gönderilmelidir.
+    </p>
+
+    <h3 class="sub-title">Zorunlu Header'lar</h3>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Header</th>
+          <th>Zorunlu</th>
+          <th>Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">X-API-Key</span></td>
+          <td><span class="param-required">Zorunlu</span></td>
+          <td>Merchant servisinden alınan API anahtarı</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">X-Hash</span></td>
+          <td><span class="param-required">Zorunlu</span></td>
+          <td>İstek gövdesinden hesaplanan hash imzası (bkz. Hash Doğrulama)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">Content-Type</span></td>
+          <td><span class="param-required">Zorunlu</span></td>
+          <td><code>application/json</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-lang">HTTP Request Example</span>
+        <button class="copy-btn"><span>⎘</span> Kopyala</button>
+      </div>
+      <pre class="language-http"><code class="language-http">POST /api/v1/vpos/payments/payment HTTP/1.1
+Host: api.payment-hub.example.com
+Content-Type: application/json
+X-API-Key: your-api-key-here
+X-Hash: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d906</code></pre>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       HASH DOĞRULAMA
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="hash" class="doc-section">
+    <span class="section-tag">Güvenlik</span>
+    <h2 class="section-title">Hash Doğrulama</h2>
+    <p class="section-desc">
+      Payment Hub, isteğin bütünlüğünü ve kaynağını doğrulamak için HMAC-SHA512 tabanlı
+      hash imzası kullanır.
+    </p>
+
+    <div class="callout callout-warning">
+      <span class="callout-icon">⚠️</span>
+      <div>Hash hesaplanmadan gönderilen istekler <strong>401 Unauthorized</strong> hatası alır. Her istek için ayrı hash hesaplanmalıdır.</div>
+    </div>
+
+    <h3 class="sub-title">Hash Hesaplama Adımları</h3>
+    <div class="hash-steps">
+      <div class="hash-step">
+        <div class="hash-step-num"></div>
+        <div class="hash-step-content">
+          <strong>Parametre map'i oluşturun</strong>
+          <p>İstek gövdesindeki tüm alanları string değerlerine dönüştürün:</p>
+          <ul style="margin:6px 0 0 16px;font-size:14px;line-height:1.7;">
+            <li>Sayısal (float): <code>%.2f</code> formatında (örn. <code>100.00</code>)</li>
+            <li>Boolean: <code>true</code> / <code>false</code> string</li>
+            <li>Nested obje veya dizi: <strong>JSON string olarak serialize edilir; obje key'leri alfabetik sıraya göre sıralanır</strong> (örn. <code>{"email":"a@b.com","first_name":"John","last_name":"Doe","phone":"+90..."}</code>)</li>
+            <li>Null / boş string: dahil edilmez</li>
+          </ul>
+        </div>
+      </div>
+      <div class="hash-step">
+        <div class="hash-step-num"></div>
+        <div class="hash-step-content">
+          <strong>Parametreleri alfabetik sıraya göre sıralayın ve JSON'a çevirin</strong>
+          <p>Tüm parametreler key'lerine göre alfabetik olarak sıralanır ve kompakt (boşluksuz) <code>JSON.stringify</code> ile tek bir string'e dönüştürülür. Örn: <code>{"amount":"250.00","currency":"TRY","order_id":"ORDER-001"}</code></p>
+        </div>
+      </div>
+      <div class="hash-step">
+        <div class="hash-step-num"></div>
+        <div class="hash-step-content">
+          <strong>HMAC-SHA512 ile hash hesaplayın</strong>
+          <p>Oluşturulan JSON string'i üzerinden merchant secret key ile HMAC-SHA512 hash hesaplanır. Sonuç <strong>Base64</strong> olarak encode edilip <code>X-Hash</code> header'ında gönderilir.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Kod Örnekleri</h3>
+    <div class="tabs">
+      <div class="tab-list">
+        <button class="tab-btn active">PHP</button>
+        <button class="tab-btn">Go</button>
+        <button class="tab-btn">.NET (C#)</button>
+        <button class="tab-btn">Java</button>
+        <button class="tab-btn">Node.js</button>
+      </div>
+
+      <!-- PHP -->
+      <div class="tab-panel active">
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <span class="code-lang">PHP</span>
+            <button class="copy-btn"><span>⎘</span> Kopyala</button>
+          </div>
+          <pre class="language-php"><code class="language-php">function sortKeysRecursive(array $data): array {
+    ksort($data);
+    foreach ($data as $key => $value) {
+        if (is_array($value)) {
+            $data[$key] = sortKeysRecursive($value);
+        }
+    }
+    return $data;
+}
+
+function toHashParam(mixed $value): ?string {
+    if ($value === null || $value === '') return null;
+    if (is_float($value) || is_int($value)) return number_format((float)$value, 2, '.', '');
+    if (is_bool($value)) return $value ? 'true' : 'false';
+    if (is_array($value)) return json_encode(sortKeysRecursive($value), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    return (string)$value;
+}
+
+function calculateHash(array $params, string $secretKey): string {
+    $strParams = [];
+    foreach ($params as $key => $value) {
+        $v = toHashParam($value);
+        if ($v !== null) $strParams[$key] = $v;
+    }
+
+    ksort($strParams); // alfabetik sırala
+
+    // Kompakt JSON string'e çevir
+    $jsonString = json_encode($strParams, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+    // HMAC-SHA512, Base64 encode
+    return base64_encode(hash_hmac('sha512', $jsonString, $secretKey, true));
+}
+
+// Kullanım
+$requestBody = [
+    'transaction_type' => 'Auth',
+    'order_id'         => 'ORDER-12345',
+    'amount'           => 100.00,
+    'currency'         => 'TRY',
+    'installment'      => 1,
+    'card_number'      => '4355084355084358',
+    'card_holder_name' => 'John Doe',
+    'exp_year'         => 2025,
+    'exp_month'        => 12,
+    'cvv'              => '000',
+    'is_3d'            => false,
+];
+
+$hash = calculateHash($requestBody, 'your-secret-key');
+// Header: X-Hash: {$hash}</code></pre>
+        </div>
+      </div>
+
+      <!-- Go -->
+      <div class="tab-panel">
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <span class="code-lang">Go</span>
+            <button class="copy-btn"><span>⎘</span> Kopyala</button>
+          </div>
+          <pre class="language-go"><code class="language-go">package main
+
+import (
+	"crypto/hmac"
+	"crypto/sha512"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"sort"
+)
+
+// Nested map'leri key'lere göre alfabetik sıralanmış şekilde JSON'a çevirir
+func sortedJSON(v interface{}) ([]byte, error) {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		buf := []byte{'{'}
+		for i, k := range keys {
+			keyBytes, _ := json.Marshal(k)
+			valBytes, err := sortedJSON(val[k])
+			if err != nil {
+				return nil, err
+			}
+			buf = append(buf, keyBytes...)
+			buf = append(buf, ':')
+			buf = append(buf, valBytes...)
+			if i < len(keys)-1 {
+				buf = append(buf, ',')
+			}
+		}
+		return append(buf, '}'), nil
+	default:
+		return json.Marshal(v)
+	}
+}
+
+// Parametreleri string map'e dönüştüren yardımcı fonksiyon
+func buildParams(body map[string]interface{}) map[string]string {
+	result := make(map[string]string)
+	for k, v := range body {
+		switch val := v.(type) {
+		case string:
+			if val != "" {
+				result[k] = val
+			}
+		case float64:
+			result[k] = fmt.Sprintf("%.2f", val)
+		case int, int32, int64:
+			result[k] = fmt.Sprintf("%d", val)
+		case bool:
+			result[k] = fmt.Sprintf("%t", val)
+		case map[string]interface{}:
+			// Nested obje: key'leri alfabetik sırala, JSON string'e çevir
+			b, err := sortedJSON(val)
+			if err == nil {
+				result[k] = string(b)
+			}
+		}
+	}
+	return result
+}
+
+func calculateHash(params map[string]string, secretKey string) string {
+	// Anahtarları alfabetik sıraya göre sırala
+	keys := make([]string, 0, len(params))
+	for k := range params {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	// Sıralı map oluştur ve kompakt JSON'a çevir
+	ordered := make(map[string]string)
+	for _, k := range keys {
+		ordered[k] = params[k]
+	}
+	jsonBytes, _ := json.Marshal(ordered)
+
+	// HMAC-SHA512 hesapla, Base64 encode et
+	mac := hmac.New(sha512.New, []byte(secretKey))
+	mac.Write(jsonBytes)
+	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
+}
+
+func main() {
+	body := map[string]interface{}{
+		"transaction_type": "Auth",
+		"order_id":         "ORDER-12345",
+		"amount":           100.00,
+		"currency":         "TRY",
+		"installment":      float64(1),
+		"card_number":      "4355084355084358",
+		"card_holder_name": "John Doe",
+		"exp_year":         float64(2025),
+		"exp_month":        float64(12),
+		"cvv":              "000",
+		"is_3d":            false,
+	}
+
+	params := buildParams(body)
+	hash := calculateHash(params, "your-secret-key")
+	fmt.Println("X-Hash:", hash)
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- .NET C# -->
+      <div class="tab-panel">
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <span class="code-lang">C#</span>
+            <button class="copy-btn"><span>⎘</span> Kopyala</button>
+          </div>
+          <pre class="language-csharp"><code class="language-csharp">using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+
+public class PaymentHashHelper
+{
+    private static string ToHashParam(object value)
+    {
+        if (value == null) return null;
+        return value switch
+        {
+            double d  => d.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+            float f   => f.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+            bool b    => b.ToString().ToLower(),
+            string s when string.IsNullOrEmpty(s) => null,
+            _         => value.ToString()
+        };
+    }
+
+    public static string CalculateHash(Dictionary&lt;string, object&gt; parameters, string secretKey)
+    {
+        // Parametreleri string'e dönüştür ve alfabetik sırala
+        var strParams = new SortedDictionary&lt;string, string&gt;();
+        foreach (var kvp in parameters)
+        {
+            var v = ToHashParam(kvp.Value);
+            if (v != null) strParams[kvp.Key] = v;
+        }
+
+        // Kompakt JSON string'e çevir
+        var jsonString = System.Text.Json.JsonSerializer.Serialize(strParams);
+
+        // HMAC-SHA512 hesapla, Base64 encode et
+        using var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(secretKey));
+        var hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(jsonString));
+        return Convert.ToBase64String(hashBytes);
+    }
+}
+
+// Kullanım
+var parameters = new Dictionary&lt;string, object&gt;
+{
+    { "transaction_type", "Auth" },
+    { "order_id",         "ORDER-12345" },
+    { "amount",           100.00 },
+    { "currency",         "TRY" },
+    { "installment",      1 },
+    { "card_number",      "4355084355084358" },
+    { "card_holder_name", "John Doe" },
+    { "exp_year",         2025 },
+    { "exp_month",        12 },
+    { "cvv",              "000" },
+    { "is_3d",            false },
+};
+
+string hash = PaymentHashHelper.CalculateHash(parameters, "your-secret-key");
+// Header: X-Hash: {hash}</code></pre>
+        </div>
+      </div>
+
+      <!-- Java -->
+      <div class="tab-panel">
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <span class="code-lang">Java</span>
+            <button class="copy-btn"><span>⎘</span> Kopyala</button>
+          </div>
+          <pre class="language-java"><code class="language-java">import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.Base64;
+
+public class PaymentHashHelper {
+
+    private static String toHashParam(Object value) {
+        if (value == null) return null;
+        if (value instanceof Double || value instanceof Float)
+            return String.format("%.2f", value);
+        if (value instanceof Boolean)
+            return value.toString();
+        String s = value.toString();
+        return s.isEmpty() ? null : s;
+    }
+
+    public static String calculateHash(Map&lt;String, Object&gt; params, String secretKey) throws Exception {
+        // Parametreleri String map'e dönüştür, TreeMap alfabetik sıralar
+        Map&lt;String, String&gt; strParams = new TreeMap&lt;&gt;();
+        for (Map.Entry&lt;String, Object&gt; entry : params.entrySet()) {
+            String v = toHashParam(entry.getValue());
+            if (v != null) strParams.put(entry.getKey(), v);
+        }
+
+        // Kompakt JSON string'e çevir
+        StringBuilder json = new StringBuilder("{");
+        boolean first = true;
+        for (Map.Entry&lt;String, String&gt; e : strParams.entrySet()) {
+            if (!first) json.append(",");
+            json.append("\"").append(e.getKey()).append("\":\"").append(e.getValue()).append("\"");
+            first = false;
+        }
+        json.append("}");
+        String jsonString = json.toString();
+
+        // HMAC-SHA512 hesapla, Base64 encode et
+        Mac mac = Mac.getInstance("HmacSHA512");
+        SecretKeySpec keySpec = new SecretKeySpec(
+            secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA512"
+        );
+        mac.init(keySpec);
+        byte[] hashBytes = mac.doFinal(jsonString.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(hashBytes);
+    }
+
+    public static void main(String[] args) throws Exception {
+        Map&lt;String, Object&gt; requestBody = new LinkedHashMap&lt;&gt;();
+        requestBody.put("transaction_type", "Auth");
+        requestBody.put("order_id",         "ORDER-12345");
+        requestBody.put("amount",           100.00);
+        requestBody.put("currency",         "TRY");
+        requestBody.put("installment",      1);
+        requestBody.put("card_number",      "4355084355084358");
+        requestBody.put("card_holder_name", "John Doe");
+        requestBody.put("exp_year",         2025);
+        requestBody.put("exp_month",        12);
+        requestBody.put("cvv",              "000");
+        requestBody.put("is_3d",            false);
+
+        String hash = calculateHash(requestBody, "your-secret-key");
+        System.out.println("X-Hash: " + hash);
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Node.js -->
+      <div class="tab-panel">
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <span class="code-lang">JavaScript (Node.js)</span>
+            <button class="copy-btn"><span>⎘</span> Kopyala</button>
+          </div>
+          <pre class="language-javascript"><code class="language-javascript">const crypto = require('crypto');
+
+// Nested objelerin key'lerini recursive olarak alfabetik sıralar
+function sortObjectRecursively(obj) {
+    if (obj === null || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(sortObjectRecursively);
+    const sorted = {};
+    Object.keys(obj).sort().forEach(k => { sorted[k] = sortObjectRecursively(obj[k]); });
+    return sorted;
+}
+
+function toHashParam(value) {
+    if (value === null || value === undefined || value === '') return null;
+    if (typeof value === 'number') return value.toFixed(2);
+    if (typeof value === 'boolean') return String(value);
+    if (typeof value === 'object') return JSON.stringify(sortObjectRecursively(value));
+    return String(value);
+}
+
+function calculateHash(params, secretKey) {
+    // Parametreleri string'e dönüştür ve null/boş değerleri çıkar
+    const strParams = {};
+    for (const [key, value] of Object.entries(params)) {
+        const v = toHashParam(value);
+        if (v !== null) strParams[key] = v;
+    }
+
+    // Alfabetik sıraya göre sırala ve kompakt JSON'a çevir
+    const sortedKeys = Object.keys(strParams).sort();
+    const sorted = {};
+    sortedKeys.forEach(k => { sorted[k] = strParams[k]; });
+    const jsonString = JSON.stringify(sorted);
+
+    // HMAC-SHA512 hesapla, Base64 encode et
+    return crypto
+        .createHmac('sha512', secretKey)
+        .update(jsonString)
+        .digest('base64');
+}
+
+// Kullanım
+const requestBody = {
+    transaction_type: 'Auth',
+    order_id:         'ORDER-12345',
+    amount:           100.00,
+    currency:         'TRY',
+    installment:      1,
+    card_number:      '4355084355084358',
+    card_holder_name: 'John Doe',
+    exp_year:         2025,
+    exp_month:        12,
+    cvv:              '000',
+    is_3d:            false,
+};
+
+const hash = calculateHash(requestBody, 'your-secret-key');
+console.log('X-Hash:', hash);
+
+// Fetch ile kullanım örneği
+async function makePayment(body, apiKey, secretKey) {
+    const hash = calculateHash(body, secretKey);
+
+    const response = await fetch('https://api.payment-hub.example.com/api/v1/vpos/payments/payment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': apiKey,
+            'X-Hash': hash,
+        },
+        body: JSON.stringify(body),
+    });
+
+    return response.json();
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       REQUEST PARAMETRELERİ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="request-params" class="doc-section">
+    <span class="section-tag">Parametreler</span>
+    <h2 class="section-title">Request Parametreleri</h2>
+
+    <!-- Payment Request -->
+    <h3 class="sub-title">Ödeme İsteği – PaymentRequest</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/vpos/payments/payment</code> endpoint'i için kullanılır.
+    </p>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Alan</th>
+          <th>Tip</th>
+          <th>Zorunlu</th>
+          <th>Açıklama</th>
+          <th>Örnek</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">transaction_type</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td><code>Auth</code> (satış) veya <code>PreAuth</code> (ön otorizasyon)</td>
+          <td><code>Auth</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Benzersiz sipariş numarası</td>
+          <td><code>ORDER-12345</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">amount</span></td>
+          <td><span class="param-type">float64</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Ödeme tutarı (0'dan büyük olmalı)</td>
+          <td><code>100.00</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">currency</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td><code>TRY</code>, <code>USD</code>, <code>EUR</code>, <code>GBP</code>, <code>CHF</code>, <code>JPY</code></td>
+          <td><code>TRY</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">installment</span></td>
+          <td><span class="param-type">int32</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Taksit sayısı (1 = peşin, 2-12 = taksitli)</td>
+          <td><code>1</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">card_number</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>16 haneli kart numarası</td>
+          <td><code>4355084355084358</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">card_holder_name</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Kart üzerindeki isim</td>
+          <td><code>John Doe</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">exp_year</span></td>
+          <td><span class="param-type">int32</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Son kullanma yılı (4 haneli)</td>
+          <td><code>2025</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">exp_month</span></td>
+          <td><span class="param-type">int32</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Son kullanma ayı (1–12)</td>
+          <td><code>12</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">cvv</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Kart güvenlik kodu (3 hane)</td>
+          <td><code>000</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">is_3d</span></td>
+          <td><span class="param-type">bool</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td><code>true</code> = 3D Secure, <code>false</code> = NonSecure (varsayılan: false)</td>
+          <td><code>false</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">ok_url</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>3D başarı dönüş URL'si (is_3d=true ise önerilir)</td>
+          <td><code>https://site.com/ok</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">fail_url</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>3D hata dönüş URL'si (is_3d=true ise önerilir)</td>
+          <td><code>https://site.com/fail</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">sub_merchant_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Alt üye işyeri ID'si (terminal bazı alt merchant gerektiriyorsa zorunlu)</td>
+          <td><code>SUBM-12345</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">customer_info</span></td>
+          <td><span class="param-type">object</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Müşteri bilgileri (first_name, last_name, email, phone)</td>
+          <td>–</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Void Request -->
+    <h3 class="sub-title">İptal İsteği – VoidRequest</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>İptal edilecek siparişin order_id değeri</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">transaction_id</span></td>
+          <td><span class="param-type">string (UUID)</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>İptal edilecek işlem ID'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">sub_merchant_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Alt üye işyeri ID'si</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Refund Request -->
+    <h3 class="sub-title">İade İsteği – RefundRequest</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>İade edilecek siparişin order_id değeri</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">transaction_id</span></td>
+          <td><span class="param-type">string (UUID)</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>İade edilecek işlem ID'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">amount</span></td>
+          <td><span class="param-type">float64</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>İade tutarı. Belirtilmezse tam iade yapılır</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">sub_merchant_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Alt üye işyeri ID'si</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Capture Request -->
+    <h3 class="sub-title">Capture İsteği – CapturePreAuthorizationRequest</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Sipariş numarası</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">transaction_id</span></td>
+          <td><span class="param-type">string (UUID)</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>PreAuth işlem ID'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">amount</span></td>
+          <td><span class="param-type">float64</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Capture edilecek tutar (PreAuth tutarını aşamaz)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">sub_merchant_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Alt üye işyeri ID'si</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ─── BIN Sorgulama ─── -->
+    <h3 class="sub-title" id="bin-query-request">BIN Sorgulama</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>GET /api/v1/vpos/bins/query</code> – Kartın ilk 8 hanesiyle BIN bilgisi sorgulanır.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">bin</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Kartın ilk 8 hanesi (query parameter)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Taksit Seçenekleri ─── -->
+    <h3 class="sub-title" id="payment-options-request">Taksit Seçenekleri ve Komisyonlar</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/vpos/payments/payment-options-with-amounts</code> – BIN ve tutar bilgisiyle taksit seçenekleri sorgulanır.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">bin</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Kartın ilk 8 hanesi</td></tr>
+        <tr><td><span class="param-name">amount</span></td><td><span class="param-type">float64</span></td><td><span class="param-required">Evet</span></td><td>İşlem tutarı (0'dan büyük olmalı)</td></tr>
+        <tr><td><span class="param-name">mcc_code</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>MCC kodu filtresi</td></tr>
+        <tr><td><span class="param-name">apply_surcharge_single</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>Peşin ödemede vade farkı uygula</td></tr>
+        <tr><td><span class="param-name">apply_surcharge_installment</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>Taksitli ödemede vade farkı uygula</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── İşlem Sorgulama ─── -->
+    <h3 class="sub-title" id="query-request">İşlem Sorgulama</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>GET /api/v1/vpos/payments/query/{transaction_id}</code> ve
+      <code>GET /api/v1/vpos/payments/query-history/{transaction_id}</code> – İşlem durumu veya geçmişi sorgulanır.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">transaction_id</span></td><td><span class="param-type">string (UUID)</span></td><td><span class="param-required">Evet</span></td><td>Sorgulanacak işlemin ID'si (path parameter)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Oturum Oluşturma ─── -->
+    <h3 class="sub-title" id="session-create-request">Oturum Oluşturma – Payment Session</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/sessions</code> – Tek kullanımlık ödeme oturumu oluşturur. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">amount</span></td><td><span class="param-type">float64</span></td><td><span class="param-required">Evet</span></td><td>Ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>TRY, USD, EUR, GBP, CHF, JPY</td></tr>
+        <tr><td><span class="param-name">order_id</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Benzersiz sipariş numarası</td></tr>
+        <tr><td><span class="param-name">ok_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Başarı dönüş URL'si</td></tr>
+        <tr><td><span class="param-name">fail_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Hata dönüş URL'si</td></tr>
+        <tr><td><span class="param-name">customer_info</span></td><td><span class="param-type">object</span></td><td><span class="param-optional">Hayır</span></td><td>first_name, last_name, email, phone</td></tr>
+        <tr><td><span class="param-name">metadata</span></td><td><span class="param-type">object</span></td><td><span class="param-optional">Hayır</span></td><td>Serbest formatta ek veri</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Ödeme Linki Oluşturma ─── -->
+    <h3 class="sub-title" id="link-create-request">Ödeme Linki Oluşturma</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/merchant/payment-links</code> – Yeni ödeme linki oluşturur. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Link başlığı</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>TRY, USD, EUR, GBP, CHF, JPY</td></tr>
+        <tr><td><span class="param-name">products</span></td><td><span class="param-type">array</span></td><td><span class="param-required">Evet</span></td><td>En az 1 ürün zorunludur</td></tr>
+        <tr><td><span class="param-name">products[].price</span></td><td><span class="param-type">float64</span></td><td><span class="param-required">Evet</span></td><td>Ürün birim fiyatı</td></tr>
+        <tr><td><span class="param-name">products[].default_quantity</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Varsayılan miktar (min 1)</td></tr>
+        <tr><td><span class="param-name">products[].display_order</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Ürünün görüntüleme sırası</td></tr>
+        <tr><td><span class="param-name">products[].name</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Ürün adı</td></tr>
+        <tr><td><span class="param-name">products[].sku</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Stok kodu</td></tr>
+        <tr><td><span class="param-name">products[].image_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Ürün görseli URL'si</td></tr>
+        <tr><td><span class="param-name">description</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Link açıklaması</td></tr>
+        <tr><td><span class="param-name">expires_at</span></td><td><span class="param-type">datetime</span></td><td><span class="param-optional">Hayır</span></td><td>Son geçerlilik tarihi (ISO 8601)</td></tr>
+        <tr><td><span class="param-name">max_uses</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Maksimum kullanım sayısı</td></tr>
+        <tr><td><span class="param-name">ok_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Başarı dönüş URL'si</td></tr>
+        <tr><td><span class="param-name">fail_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Hata dönüş URL'si</td></tr>
+        <tr><td><span class="param-name">require_3ds</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>3D Secure zorunlu mu?</td></tr>
+        <tr><td><span class="param-name">allow_non_3ds</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>3D Secure olmadan ödemeye izin ver</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Ödeme Linki Listeleme ─── -->
+    <h3 class="sub-title" id="link-list-request">Ödeme Linki Listeleme</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>GET /api/v1/merchant/payment-links</code> – Ödeme linklerini listeler. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Parametre</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">page</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Sayfa numarası (varsayılan: 1)</td></tr>
+        <tr><td><span class="param-name">limit</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Sayfa başına kayıt (maks 100)</td></tr>
+        <tr><td><span class="param-name">status</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>ACTIVE, INACTIVE, EXPIRED, COMPLETED</td></tr>
+        <tr><td><span class="param-name">search</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Başlık veya link kodu ile arama</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Para birimi filtresi</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Koleksiyon Oluşturma ─── -->
+    <h3 class="sub-title" id="collection-create-request">Koleksiyon Oluşturma</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/merchant/collections</code> – Serbest tutarlı ödeme sayfası oluşturur. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Koleksiyon başlığı</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>TRY, USD, EUR, GBP, CHF, JPY</td></tr>
+        <tr><td><span class="param-name">description</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Açıklama metni</td></tr>
+        <tr><td><span class="param-name">min_amount</span></td><td><span class="param-type">float64</span></td><td><span class="param-optional">Hayır</span></td><td>Minimum ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">max_amount</span></td><td><span class="param-type">float64</span></td><td><span class="param-optional">Hayır</span></td><td>Maksimum ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">expires_at</span></td><td><span class="param-type">datetime</span></td><td><span class="param-optional">Hayır</span></td><td>Son geçerlilik tarihi (ISO 8601)</td></tr>
+        <tr><td><span class="param-name">max_uses</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Maksimum kullanım sayısı</td></tr>
+        <tr><td><span class="param-name">ok_url / fail_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Dönüş URL'leri</td></tr>
+        <tr><td><span class="param-name">require_3ds</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>3D Secure zorunlu mu?</td></tr>
+        <tr><td><span class="param-name">allow_non_3ds</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>3D Secure olmadan ödemeye izin ver</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Koleksiyon Listeleme ─── -->
+    <h3 class="sub-title" id="collection-list-request">Koleksiyon Listeleme</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>GET /api/v1/merchant/collections</code> – Koleksiyonları listeler. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Parametre</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">page</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Sayfa numarası (varsayılan: 1)</td></tr>
+        <tr><td><span class="param-name">limit</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Sayfa başına kayıt (maks 100)</td></tr>
+        <tr><td><span class="param-name">status</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>ACTIVE, INACTIVE, EXPIRED</td></tr>
+        <tr><td><span class="param-name">search</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Başlık veya link kodu ile arama</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Para birimi filtresi</td></tr>
+      </tbody>
+    </table>
+
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       RESPONSE PARAMETRELERİ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="response-params" class="doc-section">
+    <span class="section-tag">Parametreler</span>
+    <h2 class="section-title">Response Parametreleri</h2>
+
+    <h3 class="sub-title">Ödeme Yanıtı – PaymentResponse</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">success</span></td>
+          <td><span class="param-type">boolean</span></td>
+          <td>İşlem başarı durumu</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload</span></td>
+          <td><span class="param-type">object</span></td>
+          <td>Yanıt verilerini içeren ana nesne</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.transaction_id</span></td>
+          <td><span class="param-type">string (UUID)</span></td>
+          <td>Payment Hub tarafından atanan benzersiz işlem ID'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td>İstekte gönderilen order_id değeri</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.html</span></td>
+          <td><span class="param-type">string</span></td>
+          <td>3D Secure işlemlerde banka 3D form HTML'i. Bu içerik sayfaya embed edilmelidir</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.html_url</span></td>
+          <td><span class="param-type">string</span></td>
+          <td>3D Secure için alternatif yönlendirme URL'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.amount_info</span></td>
+          <td><span class="param-type">object</span></td>
+          <td>İşlem tutar bilgileri (bkz. AmountInfo)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.gateway_response</span></td>
+          <td><span class="param-type">object</span></td>
+          <td>Payment Hub gateway yanıtı (code, message_tr, message_en)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.bank_response</span></td>
+          <td><span class="param-type">object</span></td>
+          <td>Banka yanıtı (code, message, auth_code, rrn)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.date</span></td>
+          <td><span class="param-type">string</span></td>
+          <td>İşlem tarihi ve saati (ISO 8601)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">AmountInfo</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="param-name">amount</span></td><td><span class="param-type">float64</span></td><td>İşlem tutarı</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td>İşlem para birimi</td></tr>
+        <tr><td><span class="param-name">installment</span></td><td><span class="param-type">int</span></td><td>Taksit sayısı</td></tr>
+        <tr><td><span class="param-name">original_amount</span></td><td><span class="param-type">float64</span></td><td>Orijinal tutar</td></tr>
+        <tr><td><span class="param-name">original_currency</span></td><td><span class="param-type">string</span></td><td>Orijinal para birimi</td></tr>
+        <tr><td><span class="param-name">exchange_rate</span></td><td><span class="param-type">float64</span></td><td>Döviz kuru (TRY bazlı)</td></tr>
+        <tr><td><span class="param-name">base_amount</span></td><td><span class="param-type">float64</span></td><td>TRY cinsinden tutar</td></tr>
+        <tr><td><span class="param-name">base_currency</span></td><td><span class="param-type">string</span></td><td>TRY</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">GatewayResponse</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="param-name">code</span></td><td><span class="param-type">string</span></td><td>Gateway yanıt kodu (<code>00</code> = başarılı)</td></tr>
+        <tr><td><span class="param-name">message_tr</span></td><td><span class="param-type">string</span></td><td>Türkçe mesaj</td></tr>
+        <tr><td><span class="param-name">message_en</span></td><td><span class="param-type">string</span></td><td>İngilizce mesaj</td></tr>
+        <tr><td><span class="param-name">detail_tr</span></td><td><span class="param-type">string</span></td><td>Türkçe detay mesajı</td></tr>
+        <tr><td><span class="param-name">detail_en</span></td><td><span class="param-type">string</span></td><td>İngilizce detay mesajı</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">BankResponse</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="param-name">code</span></td><td><span class="param-type">string</span></td><td>Banka yanıt kodu</td></tr>
+        <tr><td><span class="param-name">message</span></td><td><span class="param-type">string</span></td><td>Banka mesajı</td></tr>
+        <tr><td><span class="param-name">auth_code</span></td><td><span class="param-type">string</span></td><td>Provizyon / otorizasyon kodu</td></tr>
+        <tr><td><span class="param-name">rrn</span></td><td><span class="param-type">string</span></td><td>Retrieval Reference Number</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── 3D Secure Callback ─── -->
+    <h3 class="sub-title" id="callback-3d-response">3D Secure Callback Parametreleri</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      3D doğrulama tamamlandıktan sonra aşağıdaki alanlar <code>application/x-www-form-urlencoded</code> olarak
+      <code>ok_url</code> (başarı) veya <code>fail_url</code> (başarısızlık) adresine HTTP POST ile gönderilir.
+      Bu yapı hem <strong>3D Secure Ödeme</strong> hem de <strong>PreAuth 3D</strong> işlemleri için geçerlidir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Format</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">success</span></td><td><span class="param-type">string</span></td><td><code>true</code> veya <code>false</code></td></tr>
+        <tr><td><span class="param-name">transaction_id</span></td><td><span class="param-type">string (UUID)</span></td><td>İşlem ID'si</td></tr>
+        <tr><td><span class="param-name">order_id</span></td><td><span class="param-type">string</span></td><td>Sipariş numarası</td></tr>
+        <tr><td><span class="param-name">amount</span></td><td><span class="param-type">string (%.4f)</span></td><td>İşlem tutarı — örn. <code>150.0000</code></td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td>İşlem para birimi</td></tr>
+        <tr><td><span class="param-name">installment</span></td><td><span class="param-type">string (%d)</span></td><td>Taksit sayısı</td></tr>
+        <tr><td><span class="param-name">gateway_response_code</span></td><td><span class="param-type">string</span></td><td>Gateway yanıt kodu (<code>00</code> = başarılı)</td></tr>
+        <tr><td><span class="param-name">gateway_response_message</span></td><td><span class="param-type">string</span></td><td>Gateway mesajı (Türkçe)</td></tr>
+        <tr><td><span class="param-name">bank_response_code</span></td><td><span class="param-type">string</span></td><td>Banka yanıt kodu</td></tr>
+        <tr><td><span class="param-name">bank_response_message</span></td><td><span class="param-type">string</span></td><td>Banka mesajı</td></tr>
+        <tr><td><span class="param-name">rrn</span></td><td><span class="param-type">string</span></td><td>Retrieval Reference Number</td></tr>
+        <tr><td><span class="param-name">auth_code</span></td><td><span class="param-type">string</span></td><td>Provizyon kodu</td></tr>
+        <tr><td><span class="param-name">bank_code</span></td><td><span class="param-type">string</span></td><td>Banka kodu</td></tr>
+        <tr><td><span class="param-name">date</span></td><td><span class="param-type">string (RFC3339)</span></td><td>İşlem tamamlanma zamanı</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Oturum Oluşturma Yanıtı ─── -->
+    <h3 class="sub-title" id="session-create-response">Oturum Oluşturma Yanıtı</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/sessions</code> başarılı yanıtı.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">success</span></td><td><span class="param-type">boolean</span></td><td>İşlem başarı durumu</td></tr>
+        <tr><td><span class="param-name">payload</span></td><td><span class="param-type">object</span></td><td>Yanıt verilerini içeren ana nesne</td></tr>
+        <tr><td><span class="param-name">payload.session_id</span></td><td><span class="param-type">string</span></td><td>Oluşturulan oturum ID'si</td></tr>
+        <tr><td><span class="param-name">payload.session_url</span></td><td><span class="param-type">string</span></td><td>Müşteriye gönderilecek ödeme sayfası URL'si</td></tr>
+        <tr><td><span class="param-name">payload.expires_at</span></td><td><span class="param-type">string (ISO 8601)</span></td><td>Oturumun son geçerlilik zamanı</td></tr>
+      </tbody>
+    </table>
+
+
+    <!-- ─── Ödeme Linki Yanıtı ─── -->
+    <h3 class="sub-title" id="link-create-response">Ödeme Linki Yanıtı</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/merchant/payment-links</code> ve tekil getirme endpoint'lerinin yanıt yapısı.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">id</span></td><td><span class="param-type">string (UUID)</span></td><td>Link benzersiz ID'si</td></tr>
+        <tr><td><span class="param-name">merchant_name</span></td><td><span class="param-type">string</span></td><td>Merchant adı</td></tr>
+        <tr><td><span class="param-name">link_code</span></td><td><span class="param-type">string</span></td><td>Benzersiz link kodu (ör. PAY-XZ7Y3K)</td></tr>
+        <tr><td><span class="param-name">link_url</span></td><td><span class="param-type">string</span></td><td>Müşteriye gönderilecek ödeme linki URL'si</td></tr>
+        <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td>Link başlığı</td></tr>
+        <tr><td><span class="param-name">description</span></td><td><span class="param-type">string</span></td><td>Link açıklaması</td></tr>
+        <tr><td><span class="param-name">total_amount</span></td><td><span class="param-type">float64</span></td><td>Toplam tutar</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td>Para birimi</td></tr>
+        <tr><td><span class="param-name">status</span></td><td><span class="param-type">string</span></td><td>ACTIVE, INACTIVE, EXPIRED, COMPLETED</td></tr>
+        <tr><td><span class="param-name">expires_at</span></td><td><span class="param-type">string</span></td><td>Son geçerlilik tarihi</td></tr>
+        <tr><td><span class="param-name">max_uses</span></td><td><span class="param-type">int</span></td><td>Maksimum kullanım sayısı</td></tr>
+        <tr><td><span class="param-name">used_count</span></td><td><span class="param-type">int</span></td><td>Kaç kez kullanıldı</td></tr>
+        <tr><td><span class="param-name">require_3ds</span></td><td><span class="param-type">boolean</span></td><td>3D Secure zorunlu mu?</td></tr>
+        <tr><td><span class="param-name">allow_non_3ds</span></td><td><span class="param-type">boolean</span></td><td>3D olmadan ödemeye izin var mı?</td></tr>
+        <tr><td><span class="param-name">products</span></td><td><span class="param-type">array</span></td><td>Ürün listesi (id, name, price, default_quantity, sku, subtotal)</td></tr>
+        <tr><td><span class="param-name">qr_code_url</span></td><td><span class="param-type">string</span></td><td>QR kod görseli URL'si</td></tr>
+        <tr><td><span class="param-name">created_at</span></td><td><span class="param-type">string</span></td><td>Oluşturulma tarihi (ISO 8601)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Koleksiyon Yanıtı ─── -->
+    <h3 class="sub-title" id="collection-create-response">Koleksiyon Yanıtı</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/merchant/collections</code> ve tekil getirme endpoint'lerinin yanıt yapısı.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">id</span></td><td><span class="param-type">string (UUID)</span></td><td>Koleksiyon benzersiz ID'si</td></tr>
+        <tr><td><span class="param-name">merchant_name</span></td><td><span class="param-type">string</span></td><td>Merchant adı</td></tr>
+        <tr><td><span class="param-name">link_code</span></td><td><span class="param-type">string</span></td><td>Benzersiz link kodu (ör. COL-AB3CD9)</td></tr>
+        <tr><td><span class="param-name">link_url</span></td><td><span class="param-type">string</span></td><td>Müşteriye gönderilecek koleksiyon URL'si</td></tr>
+        <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td>Koleksiyon başlığı</td></tr>
+        <tr><td><span class="param-name">description</span></td><td><span class="param-type">string</span></td><td>Açıklama</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td>Para birimi</td></tr>
+        <tr><td><span class="param-name">min_amount</span></td><td><span class="param-type">float64</span></td><td>Minimum ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">max_amount</span></td><td><span class="param-type">float64</span></td><td>Maksimum ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">status</span></td><td><span class="param-type">string</span></td><td>ACTIVE, INACTIVE, EXPIRED</td></tr>
+        <tr><td><span class="param-name">expires_at</span></td><td><span class="param-type">string</span></td><td>Son geçerlilik tarihi</td></tr>
+        <tr><td><span class="param-name">max_uses</span></td><td><span class="param-type">int</span></td><td>Maksimum kullanım sayısı</td></tr>
+        <tr><td><span class="param-name">used_count</span></td><td><span class="param-type">int</span></td><td>Kaç kez kullanıldı</td></tr>
+        <tr><td><span class="param-name">require_3ds</span></td><td><span class="param-type">boolean</span></td><td>3D Secure zorunlu mu?</td></tr>
+        <tr><td><span class="param-name">allow_non_3ds</span></td><td><span class="param-type">boolean</span></td><td>3D olmadan ödemeye izin var mı?</td></tr>
+        <tr><td><span class="param-name">qr_code_url</span></td><td><span class="param-type">string</span></td><td>QR kod görseli URL'si</td></tr>
+        <tr><td><span class="param-name">created_at</span></td><td><span class="param-type">string</span></td><td>Oluşturulma tarihi (ISO 8601)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Sayfalama (Pagination) ─── -->
+    <h3 class="sub-title" id="pagination-response">Sayfalama (Pagination)</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      Liste endpoint'lerinin (<code>GET .../payment-links</code>, <code>GET .../collections</code>) yanıtında
+      <code>pagination</code> nesnesi döner.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">total</span></td><td><span class="param-type">int</span></td><td>Toplam kayıt sayısı</td></tr>
+        <tr><td><span class="param-name">limit</span></td><td><span class="param-type">int</span></td><td>Sayfa başına kayıt sayısı</td></tr>
+        <tr><td><span class="param-name">offset</span></td><td><span class="param-type">int</span></td><td>Başlangıç kayıt indeksi</td></tr>
+        <tr><td><span class="param-name">current_page</span></td><td><span class="param-type">int</span></td><td>Mevcut sayfa numarası</td></tr>
+        <tr><td><span class="param-name">total_pages</span></td><td><span class="param-type">int</span></td><td>Toplam sayfa sayısı</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       3D SECURE ÖDEME
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-3d" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">3D Secure Ödeme</h2>
+    <p class="section-desc">
+      3D Secure işlemlerde müşteri, banka tarafından kimlik doğrulamasına yönlendirilir.
+      İlk yanıt olarak dönen <code>html</code> alanı sayfaya eklenmeli veya <code>html_url</code> adresine yönlendirme yapılmalıdır.
+      Ödeme sonucu, 3D doğrulama tamamlandıktan sonra <code>ok_url</code> veya <code>fail_url</code>'e
+      <strong>HTTP POST (form)</strong> olarak iletilir.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div><code>ok_url</code> ve <code>fail_url</code> gönderilmezse sistem varsayılan callback URL'ini kullanır.
+      Bu URL'lerde <code>application/x-www-form-urlencoded</code> POST verisi alacak şekilde hazır olunmalıdır.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">is_3d: true</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "Auth",
+  "order_id": "ORDER-12345",
+  "amount": 150.00,
+  "currency": "TRY",
+  "installment": 1,
+  "card_number": "4355084355084358",
+  "card_holder_name": "John Doe",
+  "exp_year": 2026,
+  "exp_month": 12,
+  "cvv": "000",
+  "is_3d": true,
+  "ok_url": "https://yoursite.com/payment/success",
+  "fail_url": "https://yoursite.com/payment/fail",
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "order_id": "ORDER-12345",
+    "html": "&lt;!DOCTYPE html&gt;&lt;html&gt;...3D Secure Form HTML...&lt;/html&gt;",
+    "html_url": "https://payment-hub.example.com/api/v1/vpos/payments/3d-secure/d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "date": "2024-01-15T14:30:00Z"
+  }
+}</code></pre>
+            </div>
+            <div class="callout callout-warning" style="margin-top:12px;">
+              <span class="callout-icon">⚠️</span>
+              <div>Bu yanıt yalnızca 3D formunu içerir; <code>gateway_response</code> ve <code>bank_response</code> bu aşamada dönmez.
+              Ödeme sonucu, 3D doğrulama tamamlandıktan sonra <code>ok_url</code> / <code>fail_url</code>'e iletilir.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">3D Secure Akış Diyagramı</h3>
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-lang">Flow</span>
+      </div>
+      <pre class="language-none"><code>1. Müşteri ödeme formunu doldurur
+2. Sizin sunucunuz → POST /api/v1/vpos/payments/payment  (is_3d: true, ok_url, fail_url)
+3. Payment Hub     → { success: true, payload: { transaction_id, html, html_url, ... } }
+4. Sizin sunucunuz → html içeriğini müşterinin tarayıcısında render eder
+5. Tarayıcı        → Bankanın 3D sayfasına yönlendirilir
+6. Müşteri         → OTP / 3D doğrulamayı tamamlar
+7. Payment Hub     → 3D sonucunu işler ve ödemi tamamlar
+8. Tarayıcı        → ok_url veya fail_url'e HTTP POST (application/x-www-form-urlencoded)</code></pre>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       NON-SECURE ÖDEME
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-nonsecure" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">NonSecure Ödeme</h2>
+    <p class="section-desc">
+      3D doğrulama olmaksızın gerçekleştirilen ödeme işlemidir. Yanıt senkron olarak döner.
+    </p>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">is_3d: false</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "Auth",
+  "order_id": "ORDER-67890",
+  "amount": 250.00,
+  "currency": "TRY",
+  "installment": 1,
+  "card_number": "4355084355084358",
+  "card_holder_name": "Jane Doe",
+  "exp_year": 2026,
+  "exp_month": 6,
+  "cvv": "000",
+  "is_3d": false,
+  "customer_info": {
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "email": "jane.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "order_id": "ORDER-67890",
+    "amount_info": {
+      "amount": 250.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 250.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 250.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İŞLEM BAŞARILI",
+      "message_en": "APPROVED",
+      "detail_tr": "İşlem başarıyla tamamlandı",
+      "detail_en": "Transaction successfully completed."
+    },
+    "bank_response": {
+      "code": "00",
+      "message": "000 ONAY KODU 091322",
+      "auth_code": "091322",
+      "rrn": "603125844346"
+    },
+    "date": "2024-01-15T14:32:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       PREAUTH & CAPTURE
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-preauth" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">PreAuth &amp; Capture</h2>
+    <p class="section-desc">
+      Ön otorizasyon işlemi, müşterinin kartında belirli bir tutarı bloke eder.
+      İşlem tamamlandığında capture ile gerçek ödeme alınır.
+      PreAuth hem <strong>NonSecure</strong> (is_3d: false) hem de <strong>3D Secure</strong> (is_3d: true) olarak yapılabilir.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>Capture tutarı, PreAuth tutarını aşamaz. PreAuth zaten capture edilmişse tekrar capture yapılamaz.</div>
+    </div>
+
+    <h3 class="sub-title">Adım 1: PreAuth Başlatma – 3D Secure</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">transaction_type: PreAuth, is_3d: true</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "PreAuth",
+  "order_id": "ORDER-PREAUTH-3D-001",
+  "amount": 500.00,
+  "currency": "TRY",
+  "installment": 1,
+  "card_number": "4355084355084358",
+  "card_holder_name": "John Doe",
+  "exp_year": 2026,
+  "exp_month": 12,
+  "cvv": "000",
+  "is_3d": true,
+  "ok_url": "https://yoursite.com/preauth/success",
+  "fail_url": "https://yoursite.com/preauth/fail",
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "order_id": "ORDER-PREAUTH-3D-001",
+    "html": "&lt;!DOCTYPE html&gt;&lt;html&gt;...3D Secure Form HTML...&lt;/html&gt;",
+    "html_url": "https://payment-hub.example.com/api/v1/vpos/payments/3d-secure/d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "date": "2024-01-15T14:30:00Z"
+  }
+}</code></pre>
+            </div>
+            <div class="callout callout-warning" style="margin-top:12px;">
+              <span class="callout-icon">⚠️</span>
+              <div>Bu yanıt yalnızca 3D formunu içerir; <code>gateway_response</code> ve <code>bank_response</code> bu aşamada dönmez. Ödeme sonucu 3D doğrulama tamamlandıktan sonra <code>ok_url</code> / <code>fail_url</code>'e iletilir.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Adım 1: PreAuth Başlatma – NonSecure</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">transaction_type: PreAuth</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "PreAuth",
+  "order_id": "ORDER-PREAUTH-001",
+  "amount": 500.00,
+  "currency": "TRY",
+  "installment": 1,
+  "card_number": "4355084355084358",
+  "card_holder_name": "John Doe",
+  "exp_year": 2026,
+  "exp_month": 12,
+  "cvv": "000",
+  "is_3d": false,
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "order_id": "ORDER-PREAUTH-001",
+    "amount_info": {
+      "amount": 500.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 500.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 500.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İŞLEM BAŞARILI",
+      "message_en": "APPROVED",
+      "detail_tr": "İşlem başarıyla tamamlandı",
+      "detail_en": "Transaction successfully completed."
+    },
+    "bank_response": {
+      "code": "00",
+      "message": "000 ONAY KODU 091322",
+      "auth_code": "091322",
+      "rrn": "603125844346"
+    },
+    "date": "2024-01-15T14:30:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Adım 2: Capture</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/capture-pre-authorization</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "order_id": "ORDER-PREAUTH-001",
+  "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+  "amount": 450.00
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": {
+    "transaction_id": "e5f6a7b8-c9d0-1234-abcd-ef5678901234",
+    "order_id": "ORDER-PREAUTH-001",
+    "original_transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "amount_info": {
+      "amount": 450.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 450.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 450.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "CAPTURE BAŞARILI",
+      "message_en": "CAPTURE APPROVED"
+    },
+    "date": "2024-01-15T16:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAKSİTLİ ÖDEME
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-installment" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">Taksitli Ödeme</h2>
+    <p class="section-desc">
+      Taksitli ödeme akışı üç adımdan oluşur: önce kartın BIN bilgisi sorgulanır, ardından
+      o karta özel taksit seçenekleri ve komisyon oranları alınır, son olarak seçilen taksit
+      sayısıyla ödeme gerçekleştirilir.
+    </p>
+
+    <div class="callout callout-warning">
+      <span class="callout-icon">⚠️</span>
+      <div>Merchant için taksitli ödeme aktif değilse <code>ErrInstallmentNotAllowed</code> hatası döner.</div>
+    </div>
+
+    <!-- ── Adım 1: BIN Sorgulama ── -->
+    <h3 class="sub-title" id="bin-query">Adım 1: Kart BIN Sorgulama</h3>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">
+      Kartın ilk 8 hanesi ile BIN sorgusu yapılır. Dönen yanıttaki banka (<code>member_name</code>),
+      kart şeması (<code>scheme_name</code>) ve marka (<code>brand_name</code>) bilgileri; taksit
+      seçeneklerini görüntülemek ve ödeme ekranını kişiselleştirmek için kullanılır.
+    </p>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/vpos/bins/query</span>
+        <span class="endpoint-desc">?bin=43550843</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">GET /api/v1/vpos/bins/query?bin=43550843 HTTP/1.1
+X-API-Key: your-api-key
+X-Hash: {hash}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "bin_range_min": "43550800",
+      "bin_range_max": "43550899",
+      "main": true,
+      "card_no_length": 16,
+      "validate_for_check_digit": true,
+      "card_type_no": "1",
+      "card_type_full": "DEBIT",
+      "scheme_name": "VISA",
+      "type_name": "DEBIT",
+      "segment_name": "CONSUMER",
+      "brand_name": "VISA CLASSIC",
+      "member_no": 15,
+      "member_name": "Ziraat Bankası",
+      "active_for_clearing": true,
+      "active_for_fraud": true
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Adım 2: Taksit Seçenekleri ── -->
+    <h3 class="sub-title" id="payment-options">Adım 2: Taksit Seçenekleri ve Komisyonlar</h3>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">
+      BIN ve tutar bilgisiyle birlikte taksit seçenekleri sorgulandığında her taksit için
+      müşterinin ödeyeceği toplam tutar (<code>customer_pays</code>) ve aylık taksit tutarı
+      (<code>installment_amount</code>) hesaplanmış olarak döner.
+    </p>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment-options-with-amounts</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "bin": "43550843",
+  "amount": 1200.00
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "amount": 1200.00,
+  "single_payment": {
+    "installment_count": 1,
+    "merchant_commission_rate": 1.50,
+    "customer_pays": 1218.00,
+    "installment_amount": 1218.00,
+    "apply_surcharge": true
+  },
+  "installment_options": [
+    {
+      "bank": {
+        "name": "Ziraat Bankası",
+        "code": "0015",
+        "member_no": 15
+      },
+      "bank_card_brands": [
+        {
+          "card_brand": {
+            "name": "VISA CLASSIC",
+            "code": "VC"
+          },
+          "installments": [
+            {
+              "installment_count": 3,
+              "merchant_commission_rate": 2.50,
+              "customer_pays": 1230.00,
+              "installment_amount": 410.00,
+              "apply_surcharge": false
+            },
+            {
+              "installment_count": 6,
+              "merchant_commission_rate": 3.50,
+              "customer_pays": 1242.00,
+              "installment_amount": 207.00,
+              "apply_surcharge": false
+            },
+            {
+              "installment_count": 9,
+              "merchant_commission_rate": 4.50,
+              "customer_pays": 1254.00,
+              "installment_amount": 139.33,
+              "apply_surcharge": false
+            },
+            {
+              "installment_count": 12,
+              "merchant_commission_rate": 5.50,
+              "customer_pays": 1266.00,
+              "installment_amount": 105.50,
+              "apply_surcharge": false
+            }
+          ],
+          "max_installment_with_mcc": 12
+        }
+      ]
+    }
+  ]
+}</code></pre>
+            </div>
+            <div class="callout callout-info" style="margin-top:12px;">
+              <span class="callout-icon">ℹ️</span>
+              <div>
+                Karta göre taksit seçenekleri sorgulamadan genel seçenekleri listelemek için
+                <code>GET /api/v1/vpos/payments/payment-options</code> endpoint'ini kullanabilirsiniz
+                (BIN veya tutar gerektirmez).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Adım 3: Ödeme ── -->
+    <h3 class="sub-title">Adım 3: Taksitli Ödemeyi Gerçekleştir</h3>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">
+      Önceki adımda seçilen taksit sayısı <code>installment</code> alanına yazılarak ödeme isteği gönderilir.
+      3D Secure akışı için <code>is_3d: true</code> ve <code>ok_url</code> / <code>fail_url</code> eklenmelidir.
+    </p>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">installment ≥ 2</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "Auth",
+  "order_id": "ORDER-INST-001",
+  "amount": 1200.00,
+  "currency": "TRY",
+  "installment": 6,
+  "card_number": "4355084355084358",
+  "card_holder_name": "John Doe",
+  "exp_year": 2026,
+  "exp_month": 12,
+  "cvv": "000",
+  "is_3d": false,
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "c3d4e5f6-a7b8-9012-cdef-gh3456789012",
+    "order_id": "ORDER-INST-001",
+    "amount_info": {
+      "amount": 1200.00,
+      "currency": "TRY",
+      "installment": 6,
+      "original_amount": 1200.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 1200.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İŞLEM BAŞARILI",
+      "message_en": "APPROVED",
+      "detail_tr": "İşlem başarıyla tamamlandı",
+      "detail_en": "Transaction successfully completed."
+    },
+    "bank_response": {
+      "code": "00",
+      "message": "000 ONAY KODU 183447",
+      "auth_code": "183447",
+      "rrn": "612034912876"
+    },
+    "date": "2024-01-15T14:35:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       İPTAL (VOID)
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="void" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">İptal (Void)</h2>
+    <p class="section-desc">
+      İptal işlemi yalnızca <strong>aynı gün</strong> yapılan işlemlere uygulanabilir.
+      Farklı günlerdeki işlemler için <strong>İade (Refund)</strong> kullanılmalıdır.
+    </p>
+
+    <div class="callout callout-danger">
+      <span class="callout-icon">❌</span>
+      <div>Farklı günde gerçekleştirilmiş işleme iptal uygulanmaya çalışılırsa <code>ErrVoidNotAllowedDifferentDay</code> hatası alınır.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/void</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "order_id": "ORDER-12345",
+  "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc"
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": {
+    "transaction_id": "f1g2h3i4-j5k6-7890-mnop-qr1234567890",
+    "order_id": "ORDER-12345",
+    "original_transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "amount_info": {
+      "amount": 150.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 150.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 150.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İPTAL BAŞARILI",
+      "message_en": "VOID APPROVED"
+    },
+    "date": "2024-01-15T15:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       İADE (REFUND)
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="refund" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">İade (Refund)</h2>
+    <p class="section-desc">
+      İade işlemi önceki günlerde gerçekleştirilen ödemeler için kullanılır.
+      Kısmi iade yapmak için <code>amount</code> alanı gönderin; tam iade için belirtmeyebilirsiniz.
+    </p>
+
+    <div class="card-grid" style="margin-bottom:16px;">
+      <div class="info-card">
+        <div class="card-label">Maksimum İade Süresi</div>
+        <div class="card-value">30 gün</div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Aynı Gün İşlem</div>
+        <div class="card-value">İptal (Void) kullanın</div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Kısmi İade</div>
+        <div class="card-value">amount alanıyla desteklenir</div>
+      </div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/refund</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON – Tam İade</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "order_id": "ORDER-67890",
+  "transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+}</code></pre>
+            </div>
+            <div class="code-block-wrapper" style="margin-top:12px;">
+              <div class="code-block-header">
+                <span class="code-lang">JSON – Kısmi İade</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "order_id": "ORDER-67890",
+  "transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "amount": 100.00
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": {
+    "transaction_id": "g7h8i9j0-k1l2-3456-mnop-qr7890123456",
+    "order_id": "ORDER-67890",
+    "original_transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "amount_info": {
+      "amount": 250.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 250.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 250.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İADE BAŞARILI",
+      "message_en": "REFUND APPROVED"
+    },
+    "date": "2024-01-16T10:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       SORGULAMA
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="query" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">İşlem Sorgulama</h2>
+    <p class="section-desc">Bir işlemin güncel durumunu veya geçmiş kayıtlarını sorgulayabilirsiniz.</p>
+
+    <div class="endpoint-card" style="margin-bottom:20px;">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/query/{transaction_id}</span>
+        <span class="endpoint-desc">Anlık durum</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">GET /api/v1/vpos/payments/query/d4de0c6a-c51f-4aff-bf75-4989c9204bdc HTTP/1.1
+Host: api.payment-hub.example.com
+X-API-Key: your-api-key-here
+X-Hash: &lt;hash-of-transaction_id&gt;</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": {
+    "response_code": "00",
+    "response_message": "İşlem başarılı",
+    "transaction_status": "SUCCESS",
+    "auth_code": "091322",
+    "order_id": "ORDER-12345",
+    "amount": "150.00",
+    "bank_response_code": "00",
+    "bank_response_message": "000 ONAY KODU 091322"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/query-history/{transaction_id}</span>
+        <span class="endpoint-desc">Geçmiş kayıtlar</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">GET /api/v1/vpos/payments/query-history/d4de0c6a-c51f-4aff-bf75-4989c9204bdc HTTP/1.1
+Host: api.payment-hub.example.com
+X-API-Key: your-api-key-here
+X-Hash: &lt;hash-of-transaction_id&gt;</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": [
+    {
+      "response_code": "00",
+      "response_message": "İşlem başarılı",
+      "transaction_status": "SUCCESS",
+      "auth_code": "091322",
+      "order_id": "ORDER-12345",
+      "amount": "150.00",
+      "bank_response_code": "00",
+      "bank_response_message": "000 ONAY KODU 091322"
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       LİNK İŞLEMLERİ – GENEL BAKIŞ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="link-intro" class="doc-section">
+    <span class="section-tag">Link İşlemleri</span>
+    <h2 class="section-title">Link İşlemleri – Genel Bakış</h2>
+    <p class="section-desc">
+      Payment Link Service; ödeme oturumları, ödeme linkleri ve koleksiyonlar aracılığıyla
+      müşterilere bağlantı tabanlı ödeme akışları sunar. Üç farklı yöntem mevcuttur:
+    </p>
+
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="card-label">Ödeme Oturumu</div>
+        <div class="card-value" style="font-family:inherit;font-size:14px;font-weight:500;">
+          API Key + Hash ile oluşturulan tek kullanımlık ödeme oturumu.
+          Müşteriye session URL gönderilir, müşteri kendi bilgilerini girer.
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Ödeme Linki</div>
+        <div class="card-value" style="font-family:inherit;font-size:14px;font-weight:500;">
+          Ürün bazlı kalıcı ödeme sayfası. QR kod desteği. Çoklu kullanım ve son kullanma tarihi ayarlanabilir.
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Koleksiyon</div>
+        <div class="card-value" style="font-family:inherit;font-size:14px;font-weight:500;">
+          Müşterinin tutarı kendisinin belirlediği (min/max aralığında) serbest tutarlı ödeme linki.
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Base URL</h3>
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="card-label">Payment Link Service Base URL</div>
+        <div class="card-value"><a href="#">https://api.payment-link.example.com</a></div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">API Version Prefix</div>
+        <div class="card-value">/api/v1</div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Kimlik Doğrulama Yöntemleri</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Yöntem</th><th>Endpoint Grubu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>X-API-Key + X-Hash</strong></td>
+          <td>Merchant endpoint'leri (<code>/merchant/*</code>, <code>/sessions</code>)</td>
+          <td>Payment Hub ile aynı hash doğrulama mekanizması</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Tüm Endpoint Listesi</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Metod</th><th>Endpoint</th><th>Auth</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="method-badge method-post">POST</span></td><td><span class="param-name">/api/v1/sessions</span></td><td>API Key + Hash</td><td>Ödeme oturumu oluştur</td></tr>
+        <tr><td><span class="method-badge method-post">POST</span></td><td><span class="param-name">/api/v1/merchant/payment-links</span></td><td>API Key + Hash</td><td>Ödeme linki oluştur</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/payment-links</span></td><td>API Key + Hash</td><td>Ödeme linklerini listele</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/payment-links/:id</span></td><td>API Key + Hash</td><td>Ödeme linkini getir</td></tr>
+        <tr><td><span class="method-badge method-put">PATCH</span></td><td><span class="param-name">/api/v1/merchant/payment-links/:id/status</span></td><td>API Key + Hash</td><td>Link durumunu güncelle</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/payment-links/:id/qr</span></td><td>API Key + Hash</td><td>QR kod görseli (PNG)</td></tr>
+        <tr><td><span class="method-badge method-post">POST</span></td><td><span class="param-name">/api/v1/merchant/collections</span></td><td>API Key + Hash</td><td>Koleksiyon oluştur</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/collections</span></td><td>API Key + Hash</td><td>Koleksiyonları listele</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/collections/:id</span></td><td>API Key + Hash</td><td>Koleksiyonu getir</td></tr>
+        <tr><td><span class="method-badge method-put">PATCH</span></td><td><span class="param-name">/api/v1/merchant/collections/:id/status</span></td><td>API Key + Hash</td><td>Koleksiyon durumunu güncelle</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/collections/:id/qr</span></td><td>API Key + Hash</td><td>Koleksiyon QR kodu</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       ÖDEME OTURUMU (PAYMENT SESSION)
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-session" class="doc-section">
+    <span class="section-tag">Link İşlemleri</span>
+    <h2 class="section-title">Ödeme Oturumu (Payment Session)</h2>
+    <p class="section-desc">
+      Sunucu tarafında oluşturulan, tek kullanımlık ödeme bağlantısı. Müşteriye
+      <code>session_url</code> gönderilir; müşteri bu URL üzerinden kart bilgilerini girerek ödeme yapar.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>Oturum oluşturma endpoint'i <strong>X-API-Key + X-Hash</strong> doğrulaması gerektirir.
+      Hash hesaplaması için <a href="#hash">Hash Doğrulama</a> bölümüne bakın.</div>
+    </div>
+
+    <!-- Oturum oluştur -->
+    <h3 class="sub-title">Oturum Oluştur</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/sessions</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "amount": 250.00,
+  "currency": "TRY",
+  "order_id": "ORDER-SESSION-001",
+  "ok_url": "https://yoursite.com/payment/success",
+  "fail_url": "https://yoursite.com/payment/fail",
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  },
+  "metadata": {
+    "internal_ref": "REF-123"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "session_id": "sess_5lnohiu4pvokvzsu",
+    "session_url": "http://localhost:3002/api/v1/public/session/sess_5lnohiu4pvokvzsu",
+    "expires_at": "2026-03-04T12:01:08.797663+03:00"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <hr class="divider" />
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       ÖDEME LİNKİ – MERCHANT API KEY
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="link-merchant" class="doc-section">
+    <span class="section-tag">Link İşlemleri</span>
+    <h2 class="section-title">Ödeme Linki – Merchant API</h2>
+    <p class="section-desc">
+      Admin paneli (Keycloak) yerine doğrudan kendi sisteminizden API Key + Hash doğrulamasıyla
+      ödeme linki yönetimi. Sadece kendi merchant'ınıza ait linkler görünür.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">🔑</span>
+      <div>
+        Her istekte <code>X-API-Key</code> ve <code>X-Hash</code> header'ları zorunludur.
+        Hash nasıl hesaplanır: <a href="#hash">Hash Doğrulama</a> bölümüne bakın.
+      </div>
+    </div>
+
+    <div class="code-block-wrapper" style="margin-bottom:24px;">
+      <div class="code-block-header">
+        <span class="code-lang">HTTP – Zorunlu Header'lar</span>
+        <button class="copy-btn"><span>⎘</span> Kopyala</button>
+      </div>
+      <pre class="language-http"><code class="language-http">X-API-Key: your-api-key
+X-Hash: {hmac-sha512-signature}</code></pre>
+    </div>
+
+    <!-- Oluştur -->
+    <h3 class="sub-title">Ödeme Linki Oluştur</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/merchant/payment-links</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "title": "Yaz Sezonu Ürünleri",
+  "description": "Yaz sezonu özel fiyatlı ürünler",
+  "currency": "TRY",
+  "products": [
+    {
+      "name": "Güneş Gözlüğü",
+      "description": "Polarize cam, UV400 koruma",
+      "price": 299.90,
+      "default_quantity": 1,
+      "sku": "SKU-001",
+      "image_url": "https://example.com/images/sunglasses.jpg",
+      "display_order": 1
+    }
+  ],
+  "expires_at": "2024-09-01T00:00:00Z",
+  "max_uses": 100,
+  "ok_url": "https://yoursite.com/payment/success",
+  "fail_url": "https://yoursite.com/payment/fail",
+  "require_3ds": false,
+  "allow_non_3ds": true
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "id": "f1a2b3c4-d5e6-7890-abcd-ef1234567890",
+    "merchant_name": "Örnek Mağaza",
+    "link_code": "PAY-XZ7Y3K",
+    "link_url": "https://api.payment-link.example.com/api/v1/public/payment-links/PAY-XZ7Y3K/page",
+    "title": "Yaz Sezonu Ürünleri",
+    "description": "Yaz sezonu özel fiyatlı ürünler",
+    "total_amount": 299.90,
+    "currency": "TRY",
+    "status": "ACTIVE",
+    "expires_at": "2024-09-01T00:00:00Z",
+    "max_uses": 100,
+    "used_count": 0,
+    "require_3ds": false,
+    "allow_non_3ds": true,
+    "products": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-111111111111",
+        "name": "Güneş Gözlüğü",
+        "description": "Polarize cam, UV400 koruma",
+        "price": 299.90,
+        "default_quantity": 1,
+        "sku": "SKU-001",
+        "image_url": "https://example.com/images/sunglasses.jpg",
+        "subtotal": 299.90
+      }
+    ],
+    "qr_code_url": "https://api.payment-link.example.com/api/v1/merchant/payment-links/f1a2b3c4.../qr",
+    "created_at": "2024-01-15T10:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Listele -->
+    <h3 class="sub-title">Ödeme Linklerini Listele</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/merchant/payment-links</span>
+        <span class="endpoint-desc">Sadece kendi merchant'ınıza ait linkler</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">GET /api/v1/merchant/payment-links?page=1&limit=20&status=ACTIVE&search=yaz&currency=TRY HTTP/1.1
+X-API-Key: your-api-key
+X-Hash: {hash}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "data": [
+      {
+        "id": "f1a2b3c4-d5e6-7890-abcd-ef1234567890",
+        "merchant_name": "Örnek Mağaza",
+        "link_code": "PAY-XZ7Y3K",
+        "link_url": "https://api.payment-link.example.com/api/v1/public/payment-links/PAY-XZ7Y3K/page",
+        "title": "Yaz Sezonu Ürünleri",
+        "description": "Yaz sezonu özel fiyatlı ürünler",
+        "total_amount": 299.90,
+        "currency": "TRY",
+        "status": "ACTIVE",
+        "used_count": 5,
+        "qr_code_url": "https://api.payment-link.example.com/api/v1/merchant/payment-links/f1a2b3c4.../qr",
+        "created_at": "2024-01-15T10:00:00Z"
+      }
+    ],
+    "pagination": {
+      "total": 50,
+      "limit": 20,
+      "offset": 0,
+      "current_page": 1,
+      "total_pages": 3
+    }
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Getir -->
+    <h3 class="sub-title">Tekil Ödeme Linki Getir</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/merchant/payment-links/:id</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "id": "f1a2b3c4-d5e6-7890-abcd-ef1234567890",
+    "merchant_name": "Örnek Mağaza",
+    "link_code": "PAY-XZ7Y3K",
+    "link_url": "https://api.payment-link.example.com/api/v1/public/payment-links/PAY-XZ7Y3K/page",
+    "title": "Yaz Sezonu Ürünleri",
+    "description": "Yaz sezonu özel fiyatlı ürünler",
+    "total_amount": 299.90,
+    "currency": "TRY",
+    "status": "ACTIVE",
+    "expires_at": "2024-09-01T00:00:00Z",
+    "max_uses": 100,
+    "used_count": 5,
+    "require_3ds": false,
+    "allow_non_3ds": true,
+    "products": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-111111111111",
+        "name": "Güneş Gözlüğü",
+        "description": "Polarize cam, UV400 koruma",
+        "price": 299.90,
+        "default_quantity": 1,
+        "sku": "SKU-001",
+        "image_url": "https://example.com/images/sunglasses.jpg",
+        "subtotal": 299.90
+      }
+    ],
+    "qr_code_url": "https://api.payment-link.example.com/api/v1/merchant/payment-links/f1a2b3c4.../qr",
+    "created_at": "2024-01-15T10:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Durum güncelle -->
+    <h3 class="sub-title">Link Durumunu Güncelle</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-put">PATCH</span>
+        <span class="endpoint-path">/api/v1/merchant/payment-links/:id/status</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{ "status": "INACTIVE" }</code></pre>
+            </div>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:8px;">Geçerli değerler: <code>ACTIVE</code>, <code>INACTIVE</code>, <code>EXPIRED</code>, <code>COMPLETED</code></p>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "message": "Payment link status updated successfully"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QR Kod -->
+    <h3 class="sub-title">QR Kod Görseli</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/merchant/payment-links/:id/qr</span>
+        <span class="endpoint-desc">PNG görsel döner</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP Headers</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">HTTP/1.1 200 OK
+Content-Type: image/png
+Content-Disposition: inline; filename="qr.png"
+
+&lt;binary PNG data&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       KOLEKSİYON – MERCHANT API KEY
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="collection-merchant" class="doc-section">
+    <span class="section-tag">Link İşlemleri</span>
+    <h2 class="section-title">Koleksiyon – Merchant API</h2>
+    <p class="section-desc">
+      Serbest tutarlı ödeme sayfaları yönetimi. API Key + Hash doğrulamasıyla kendi sisteminizden
+      koleksiyon oluşturup yönetebilirsiniz. Sadece kendi merchant'ınıza ait koleksiyonlar görünür.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">🔑</span>
+      <div>
+        Her istekte <code>X-API-Key</code> ve <code>X-Hash</code> header'ları zorunludur.
+        Hash hesaplama için <a href="#hash">Hash Doğrulama</a> bölümüne bakın.
+      </div>
+    </div>
+
+    <!-- Oluştur -->
+    <h3 class="sub-title">Koleksiyon Oluştur</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/merchant/collections</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "title": "Bağış Toplama",
+  "description": "Okul yararına bağış kampanyası",
+  "currency": "TRY",
+  "min_amount": 10.00,
+  "max_amount": 10000.00,
+  "expires_at": "2024-12-31T00:00:00Z",
+  "max_uses": 500,
+  "ok_url": "https://yoursite.com/donation/thanks",
+  "fail_url": "https://yoursite.com/donation/fail",
+  "require_3ds": false,
+  "allow_non_3ds": true
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "id": "c1d2e3f4-a5b6-7890-cdef-gh1234567890",
+    "merchant_name": "Örnek Mağaza",
+    "link_code": "COL-AB3CD9",
+    "link_url": "https://api.payment-link.example.com/api/v1/public/collections/COL-AB3CD9/page",
+    "title": "Bağış Toplama",
+    "description": "Okul yararına bağış kampanyası",
+    "currency": "TRY",
+    "min_amount": 10.00,
+    "max_amount": 10000.00,
+    "status": "ACTIVE",
+    "expires_at": "2024-12-31T00:00:00Z",
+    "max_uses": 500,
+    "used_count": 0,
+    "require_3ds": false,
+    "allow_non_3ds": true,
+    "qr_code_url": "https://api.payment-link.example.com/api/v1/merchant/collections/c1d2e3f4.../qr",
+    "created_at": "2024-01-15T10:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Listele -->
+    <h3 class="sub-title">Koleksiyonları Listele</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/merchant/collections</span>
+        <span class="endpoint-desc">Sadece kendi merchant'ınıza ait koleksiyonlar</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">GET /api/v1/merchant/collections?page=1&limit=20&status=ACTIVE HTTP/1.1
+X-API-Key: your-api-key
+X-Hash: {hash}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "data": [
+      {
+        "id": "c1d2e3f4-a5b6-7890-cdef-gh1234567890",
+        "merchant_name": "Örnek Mağaza",
+        "link_code": "COL-AB3CD9",
+        "link_url": "https://api.payment-link.example.com/api/v1/public/collections/COL-AB3CD9/page",
+        "title": "Bağış Toplama",
+        "description": "Okul yararına bağış kampanyası",
+        "currency": "TRY",
+        "min_amount": 10.00,
+        "max_amount": 10000.00,
+        "status": "ACTIVE",
+        "expires_at": "2024-12-31T00:00:00Z",
+        "max_uses": 500,
+        "used_count": 42,
+        "require_3ds": false,
+        "allow_non_3ds": true,
+        "qr_code_url": "https://api.payment-link.example.com/api/v1/merchant/collections/c1d2e3f4.../qr",
+        "created_at": "2024-01-15T10:00:00Z"
+      }
+    ],
+    "pagination": {
+      "total": 12,
+      "limit": 20,
+      "offset": 0,
+      "current_page": 1,
+      "total_pages": 1
+    }
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Getir -->
+    <h3 class="sub-title">Tekil Koleksiyon Getir</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/merchant/collections/:id</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "id": "c1d2e3f4-a5b6-7890-cdef-gh1234567890",
+    "merchant_name": "Örnek Mağaza",
+    "link_code": "COL-AB3CD9",
+    "link_url": "https://api.payment-link.example.com/api/v1/public/collections/COL-AB3CD9/page",
+    "title": "Bağış Toplama",
+    "description": "Okul yararına bağış kampanyası",
+    "currency": "TRY",
+    "min_amount": 10.00,
+    "max_amount": 10000.00,
+    "status": "ACTIVE",
+    "expires_at": "2024-12-31T00:00:00Z",
+    "max_uses": 500,
+    "used_count": 42,
+    "require_3ds": false,
+    "allow_non_3ds": true,
+    "qr_code_url": "https://api.payment-link.example.com/api/v1/merchant/collections/c1d2e3f4.../qr",
+    "created_at": "2024-01-15T10:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Durum güncelle -->
+    <h3 class="sub-title">Koleksiyon Durumunu Güncelle</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-put">PATCH</span>
+        <span class="endpoint-path">/api/v1/merchant/collections/:id/status</span>
+        <span class="endpoint-desc">X-API-Key + X-Hash</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{ "status": "INACTIVE" }</code></pre>
+            </div>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:8px;">Geçerli değerler: <code>ACTIVE</code>, <code>INACTIVE</code>, <code>EXPIRED</code></p>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "message": "Collection status updated successfully"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QR Kod -->
+    <h3 class="sub-title">QR Kod Görseli</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/merchant/collections/:id/qr</span>
+        <span class="endpoint-desc">PNG görsel döner</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP Headers</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">HTTP/1.1 200 OK
+Content-Type: image/png
+Content-Disposition: inline; filename="qr.png"
+
+&lt;binary PNG data&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       TEST İŞLEMLERİ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="test" class="doc-section">
+    <span class="section-tag">Test Ortamı</span>
+    <h2 class="section-title">Test İşlemleri</h2>
+    <p class="section-desc">
+      Geliştirme ve entegrasyon testleri için aşağıdaki test kartlarını kullanabilirsiniz.
+      Test işlemleri gerçek bankacılık sistemine gönderilmez.
+    </p>
+
+    <div class="callout callout-warning">
+      <span class="callout-icon">⚠️</span>
+      <div>Test kartları yalnızca test ortamında geçerlidir. Production ortamında gerçek kart bilgileri kullanılmalıdır.</div>
+    </div>
+
+    <h3 class="sub-title">Sandbox Test Kartları</h3>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">
+      Aşağıdaki kartlar sandbox ortamında farklı ödeme senaryolarını test etmek için kullanılır.
+      Tüm kartlar için <strong>CVV: 000</strong>, <strong>SKT: 12/2026</strong>, kart sahibi herhangi bir isim olabilir.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>Sandbox ortamında CVV ve son kullanma tarihi doğrulaması yapılmaz.
+      Herhangi bir CVV (3-4 haneli) ve herhangi bir son kullanma tarihi kabul edilir.
+      Aşağıdaki değerler yalnızca önerilen standart test değerleridir.</div>
+    </div>
+    <div class="test-card-grid">
+      <div class="test-card">
+        <div class="tc-label">Başarılı Ödeme</div>
+        <div class="tc-number">4000 0000 0000 0001</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 00</div>
+        <span class="tc-result result-success">✓ ONAY</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Yetersiz Bakiye</div>
+        <div class="tc-number">4000 0000 0000 0002</div>
+        <div class="tc-meta">HTTP 402 &nbsp;|&nbsp; ISO: 51</div>
+        <span class="tc-result result-fail">✗ YETERSİZ BAKİYE</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">İşlem Onaylanmadı</div>
+        <div class="tc-number">4000 0000 0000 0003</div>
+        <div class="tc-meta">HTTP 402 &nbsp;|&nbsp; ISO: 05</div>
+        <span class="tc-result result-fail">✗ DO NOT HONOR</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Geçersiz Kart Numarası</div>
+        <div class="tc-number">4000 0000 0000 0004</div>
+        <div class="tc-meta">HTTP 400 &nbsp;|&nbsp; ISO: 14</div>
+        <span class="tc-result result-fail">✗ GEÇERSİZ KART</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Fraud Şüphesi</div>
+        <div class="tc-number">4000 0000 0000 0005</div>
+        <div class="tc-meta">HTTP 402 &nbsp;|&nbsp; ISO: 34</div>
+        <span class="tc-result result-fail">✗ FRAUD ŞÜPHESİ</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Sistem Hatası</div>
+        <div class="tc-number">4000 0000 0000 0006</div>
+        <div class="tc-meta">HTTP 500 &nbsp;|&nbsp; ISO: 96</div>
+        <span class="tc-result result-fail">✗ SİSTEM HATASI</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Gateway Timeout</div>
+        <div class="tc-number">4000 0000 0000 0007</div>
+        <div class="tc-meta">HTTP 504 &nbsp;|&nbsp; ISO: 91</div>
+        <span class="tc-result result-fail">✗ TIMEOUT</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">3D Secure Akışı</div>
+        <div class="tc-number">4000 0000 0000 0008</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 00</div>
+        <span class="tc-result result-success">✓ 3D ONAY</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Süresi Dolmuş Kart</div>
+        <div class="tc-number">4000 0000 0000 0009</div>
+        <div class="tc-meta">HTTP 400 &nbsp;|&nbsp; ISO: 54</div>
+        <span class="tc-result result-fail">✗ SÜRESİ DOLMUŞ</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Ön Provizyon</div>
+        <div class="tc-number">4000 0000 0000 0010</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 00</div>
+        <span class="tc-result result-success">✓ PRE-AUTH ONAY</span>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Test Ortamı Bilgileri</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Parametre</th><th>Değer</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>CVV</td>
+          <td><code>000</code> (herhangi bir 3-4 haneli değer kabul edilir)</td>
+        </tr>
+        <tr>
+          <td>Son Kullanma Tarihi</td>
+          <td><code>12/2026</code> (herhangi bir tarih kabul edilir, süresi dolmuş dahil)</td>
+        </tr>
+        <tr>
+          <td>Kart Sahibi</td>
+          <td>Herhangi bir isim</td>
+        </tr>
+        <tr>
+          <td>3D OTP (test)</td>
+          <td><code>123456</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Örnek Test İsteği (cURL)</h3>
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-lang">cURL</span>
+        <button class="copy-btn"><span>⎘</span> Kopyala</button>
+      </div>
+      <pre class="language-bash"><code class="language-bash">curl -X POST https://api.payment-hub.example.com/api/v1/vpos/payments/payment \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-test-api-key" \
+  -H "X-Hash: your-calculated-hash" \
+  -d '{
+    "transaction_type": "Auth",
+    "order_id": "TEST-ORDER-001",
+    "amount": 100.00,
+    "currency": "TRY",
+    "installment": 1,
+    "card_number": "4000000000000001",
+    "card_holder_name": "Test User",
+    "exp_year": 2026,
+    "exp_month": 12,
+    "cvv": "000",
+    "is_3d": false,
+    "customer_info": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "john@example.com",
+      "phone": "+905551234567"
+    }
+  }'</code></pre>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       GATEWAY RESPONSE KODLARI
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="gateway-codes" class="doc-section">
+    <span class="section-tag">Referans</span>
+    <h2 class="section-title">Gateway Response Kodları</h2>
+    <p class="section-desc">
+      Bankadan dönen yanıt kodları Payment Hub tarafından ISO 8583 standardına göre normalize edilir.
+      Tüm ödeme yanıtlarındaki <code>gateway_response.code</code> ve <code>gateway_response.message_tr</code>
+      / <code>message_en</code> alanları aşağıdaki tablodaki değerleri alır.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>
+        <code>gateway_response.code</code> değeri <strong>"00"</strong> olan işlemler başarılıdır.
+        Tanımlanamayan banka hata kodları <strong>"99"</strong> olarak döner.
+        3D Secure doğrulama başarısızlıkları <strong>"98"</strong> koduyla işaretlenir.
+      </div>
+    </div>
+
+    <table class="error-table" style="margin-top:16px;">
+      <thead>
+        <tr>
+          <th style="width:60px;">Kod</th>
+          <th style="width:260px;">Mesaj TR</th>
+          <th style="width:320px;">Mesaj EN</th>
+          <th>Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">00</span></td><td>İŞLEM BAŞARILI</td><td>APPROVED</td><td>İşlem başarıyla tamamlandı.</td></tr>
+        <tr><td><span class="error-code">01</span></td><td>BANKADAN ONAY ALINIZ</td><td>REFER TO CARD ISSUER</td><td>Banka onayı gerekiyor; kart sahibi bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">02</span></td><td>BANKADAN ONAY ALINIZ (ÖZEL DURUM)</td><td>REFER TO CARD ISSUER, SPECIAL CONDITION</td><td>Banka özel durum onayı gerekiyor.</td></tr>
+        <tr><td><span class="error-code">03</span></td><td>GEÇERSİZ ÜYE İŞYERİ</td><td>INVALID MERCHANT OR SERVICE PROVIDER</td><td>Üye işyeri banka sisteminde kapalı olabilir; sanal POS bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">04</span></td><td>KARTA EL KOYUNUZ</td><td>PICK UP CARD</td><td>Kart güvenlik nedeniyle alıkonulmalı.</td></tr>
+        <tr><td><span class="error-code">05</span></td><td>RED</td><td>DO NOT HONOR</td><td>İşlem reddedildi; kart sahibi bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">07</span></td><td>KARTA EL KOYUNUZ (ÖZEL DURUM)</td><td>PICK UP CARD, SPECIAL CONDITION</td><td>Kart özel durum nedeniyle alıkonulmalı.</td></tr>
+        <tr><td><span class="error-code">08</span></td><td>ONAY VE KİMLİK DOĞRULA</td><td>HONOR WITH IDENTIFICATION</td><td>İşlem onayı için kart sahibinin kimliği doğrulanmalı.</td></tr>
+        <tr><td><span class="error-code">10</span></td><td>KISMİ ONAY</td><td>PARTIAL APPROVAL</td><td>İşlem tutarının bir kısmı onaylandı; daha düşük tutarda işlem yapılabilir.</td></tr>
+        <tr><td><span class="error-code">11</span></td><td>VIP ONAY</td><td>VIP APPROVAL</td><td>VIP müşteri işlemi onaylandı; özel limitler uygulandı.</td></tr>
+        <tr><td><span class="error-code">12</span></td><td>GEÇERSİZ İŞLEM</td><td>INVALID TRANSACTION</td><td>İşlem geçersiz; işlem tipi veya parametreler kontrol edilmeli.</td></tr>
+        <tr><td><span class="error-code">13</span></td><td>GEÇERSİZ TUTAR</td><td>INVALID AMOUNT</td><td>İşlem tutarı geçersiz; tutar formatı veya limitleri kontrol edilmeli.</td></tr>
+        <tr><td><span class="error-code">14</span></td><td>GEÇERSİZ KART NUMARASI</td><td>INVALID CARD NUMBER</td><td>Kart numarası geçersiz.</td></tr>
+        <tr><td><span class="error-code">19</span></td><td>GİRİŞ TEKRAR EDİNİZ</td><td>RE-ENTER TRANSACTION</td><td>Geçici sistem sorunu; işlem tekrar denenebilir.</td></tr>
+        <tr><td><span class="error-code">21</span></td><td>İŞLEM YAPILMADI</td><td>NO ACTION TAKEN</td><td>İşlem gerçekleştirilemedi; sistem yanıt vermedi.</td></tr>
+        <tr><td><span class="error-code">25</span></td><td>KAYIT BULUNAMADI</td><td>UNABLE TO LOCATE RECORD</td><td>İşlem kaydı sistemde bulunamadı.</td></tr>
+        <tr><td><span class="error-code">30</span></td><td>FORMAT HATASI</td><td>FORMAT ERROR</td><td>Mesaj formatı hatalı; mesaj yapısı kontrol edilmeli.</td></tr>
+        <tr><td><span class="error-code">34</span></td><td>SAHTEKARLIKTAN ŞÜPHELENİLİYOR</td><td>FRAUD SUSPICION</td><td>İşlem sahtekarlık şüphesi nedeniyle reddedildi.</td></tr>
+        <tr><td><span class="error-code">36</span></td><td>KISITLI KART</td><td>RESTRICTED CARD</td><td>Kart kısıtlı; kart sahibi bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">38</span></td><td>PIN DENEMESİ AŞILDI</td><td>ALLOWABLE PIN TRIES EXCEEDED</td><td>PIN deneme sayısı aşıldı; kart geçici olarak bloke edildi.</td></tr>
+        <tr><td><span class="error-code">41</span></td><td>KAYIP KART</td><td>LOST CARD</td><td>Kart kayıp olarak işaretlenmiş; alıkonulmalı.</td></tr>
+        <tr><td><span class="error-code">43</span></td><td>ÇALINTI KART</td><td>STOLEN CARD</td><td>Kart çalıntı olarak işaretlenmiş; alıkonulmalı.</td></tr>
+        <tr><td><span class="error-code">51</span></td><td>YETERSİZ BAKİYE</td><td>INSUFFICIENT FUNDS</td><td>Hesapta yeterli bakiye yok; daha düşük tutarda denenebilir.</td></tr>
+        <tr><td><span class="error-code">52</span></td><td>HESAP NUMARASI BULUNAMADI</td><td>NO CHECKING ACCOUNT</td><td>Vadesiz hesap bulunamadı.</td></tr>
+        <tr><td><span class="error-code">53</span></td><td>HESAP NUMARASI BULUNAMADI</td><td>NO SAVINGS ACCOUNT</td><td>Vadeli hesap bulunamadı.</td></tr>
+        <tr><td><span class="error-code">54</span></td><td>KART SÜRESİ DOLMUŞ / SON KULLANMA TARİHİ HATALI</td><td>EXPIRED CARD / INVALID EXPIRY DATE</td><td>Kart süresi dolmuş veya son kullanma tarihi hatalı.</td></tr>
+        <tr><td><span class="error-code">55</span></td><td>HATALI PIN</td><td>INCORRECT PIN</td><td>PIN kodu hatalı.</td></tr>
+        <tr><td><span class="error-code">57</span></td><td>İŞLEME İZİN YOK</td><td>TRANSACTION NOT PERMITTED TO CARDHOLDER</td><td>Kart sahibi bu işlem tipini gerçekleştiremez.</td></tr>
+        <tr><td><span class="error-code">58</span></td><td>İŞLEME İZİN YOK</td><td>TRANSACTION NOT PERMITTED TO TERMINAL</td><td>Terminal bu işlem tipini gerçekleştiremez.</td></tr>
+        <tr><td><span class="error-code">59</span></td><td>SAHTEKARLIK ŞÜPHESİ</td><td>SUSPECTED FRAUD</td><td>İşlem sahtekarlık riski nedeniyle reddedildi.</td></tr>
+        <tr><td><span class="error-code">61</span></td><td>PARA ÇEKME TUTAR LİMİTİ AŞILDI</td><td>EXCEEDS WITHDRAWAL AMOUNT LIMIT</td><td>Para çekme limiti aşıldı; daha düşük tutarda denenebilir.</td></tr>
+        <tr><td><span class="error-code">62</span></td><td>YASAKLANMIŞ KART</td><td>RESTRICTED CARD</td><td>Kart yasaklanmış; kart sahibi bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">63</span></td><td>GÜVENLİK İHLALİ</td><td>SECURITY VIOLATION</td><td>Güvenlik ihlali tespit edildi.</td></tr>
+        <tr><td><span class="error-code">65</span></td><td>GÜNLÜK İŞLEM LİMİTİ AŞILDI</td><td>EXCEEDS WITHDRAWAL FREQUENCY LIMIT</td><td>Günlük işlem limiti aşıldı; limit ertesi gün sıfırlanır.</td></tr>
+        <tr><td><span class="error-code">75</span></td><td>PIN DENEMESİ AŞILDI</td><td>ALLOWABLE PIN TRIES EXCEEDED</td><td>PIN deneme sayısı aşıldı; kart geçici olarak bloke edildi.</td></tr>
+        <tr><td><span class="error-code">76</span></td><td>HENÜZ AKTİF OLMAYAN KART</td><td>INACTIVE CARD</td><td>Kart henüz aktif değil; aktivasyon gerekiyor.</td></tr>
+        <tr><td><span class="error-code">77</span></td><td>ORJİNAL İŞLEM VERİLERİ EŞLEŞMİYOR</td><td>ORIGINAL TRANSACTION DATA NOT MATCHED</td><td>İşlem verileri eşleşmiyor; orijinal işlem kontrol edilmeli.</td></tr>
+        <tr><td><span class="error-code">78</span></td><td>SİSTEMDE KAYITLI OLMAYAN KART</td><td>NO ACCOUNT</td><td>Kart sistemde kayıtlı değil.</td></tr>
+        <tr><td><span class="error-code">82</span></td><td>GEÇERSİZ CVV</td><td>INVALID CVV</td><td>CVV kodu hatalı.</td></tr>
+        <tr><td><span class="error-code">83</span></td><td>PIN DOĞRULAMASI YAPILAMADI</td><td>CANNOT VERIFY PIN</td><td>PIN doğrulaması yapılamadı.</td></tr>
+        <tr><td><span class="error-code">85</span></td><td>RED DEĞİL</td><td>NOT DECLINED</td><td>İşlem reddedilmedi; onay bekliyor.</td></tr>
+        <tr><td><span class="error-code">86</span></td><td>PIN KONTROLÜ YAPILAMADI</td><td>CANNOT VERIFY PIN</td><td>PIN kontrolü yapılamadı; sistem hatası oluştu.</td></tr>
+        <tr><td><span class="error-code">88</span></td><td>KRİPTO HATASI</td><td>CRYPTOGRAPHIC FAILURE</td><td>Şifreleme hatası; güvenlik doğrulaması başarısız.</td></tr>
+        <tr><td><span class="error-code">89</span></td><td>KİMLİK DOĞRULAMA BAŞARISIZ</td><td>AUTHENTICATION FAILURE</td><td>Kimlik doğrulama başarısız.</td></tr>
+        <tr><td><span class="error-code">91</span></td><td>İŞLEM BANKAYA GÖNDERİLEMEDİ</td><td>ISSUER OR SWITCH INOPERATIVE</td><td>Banka sistemi çalışmıyor; işlem tekrar denenebilir.</td></tr>
+        <tr><td><span class="error-code">92</span></td><td>İŞLEM BANKAYA GÖNDERİLEMEDİ</td><td>FINANCIAL INSTITUTION CANNOT BE FOUND FOR ROUTING</td><td>Banka yönlendirmesi yapılamadı; sistem hatası oluştu.</td></tr>
+        <tr><td><span class="error-code">93</span></td><td>KART ÜYESİNİN KAYDI YOK</td><td>TRANSACTION CANNOT BE COMPLETED - VIOLATION OF LAW</td><td>Kart üyesi kaydı bulunamadı veya yasal kısıtlama mevcut.</td></tr>
+        <tr><td><span class="error-code">95</span></td><td>EŞLEŞTİRME HATASI</td><td>RECONCILE ERROR</td><td>İşlem eşleştirme hatası; sistem kontrolü gerekiyor.</td></tr>
+        <tr><td><span class="error-code">96</span></td><td>SİSTEM HATASI</td><td>SYSTEM MALFUNCTION</td><td>Sistem hatası veya zaman aşımı; işlem tekrar denenebilir.</td></tr>
+        <tr><td><span class="error-code">98</span></td><td>3D DOĞRULAMA BAŞARISIZ</td><td>3D SECURE AUTHENTICATION FAILED</td><td>Kart sahibi 3D Secure doğrulama sürecini tamamlayamadı.</td></tr>
+        <tr><td><span class="error-code">99</span></td><td>GENEL BANKA HATASI</td><td>GENERAL BANK ERROR</td><td>Tanımlanamayan genel bir banka hatası oluştu.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       HATA KODLARI
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="errors" class="doc-section">
+    <span class="section-tag">Referans</span>
+    <h2 class="section-title">Uygulama Hata Kodları</h2>
+    <p class="section-desc">
+      Payment Hub'ın döndürdüğü uygulama seviyesi hata kodları. Hata yanıtı
+      <code>success: false</code> ile birlikte <code>error.code</code>, <code>error.subCode</code> ve <code>error.message</code> alanlarını içerir.
+      <code>subCode</code> sayesinde istemciler <code>message</code> string'ini parse etmeden programatik hata yönetimi yapabilir.
+    </p>
+
+    <h3 class="sub-title">HTTP Durum Kodları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>HTTP Kodu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="http-status status-200">200 OK</span></td><td>İşlem başarıyla tamamlandı</td></tr>
+        <tr><td><span class="http-status status-400">400 Bad Request</span></td><td>Geçersiz istek parametresi veya eksik zorunlu alan</td></tr>
+        <tr><td><span class="http-status status-401">401 Unauthorized</span></td><td>Geçersiz API key, geçersiz hash imzası veya yetkisiz erişim</td></tr>
+        <tr><td><span class="http-status status-422">409 Conflict</span></td><td>Çakışan kayıt (ör. aynı order_id, zaten iptal edilmiş işlem)</td></tr>
+        <tr><td><span class="http-status status-422">422 Unprocessable Entity</span></td><td>İş kuralı ihlali (ör. aynı gün iptal, limit aşımı)</td></tr>
+        <tr><td><span class="http-status status-500">500 Internal Server Error</span></td><td>Sunucu tarafı beklenmedik hata (dahili servis hatası, gateway sorgu hatası vb.)</td></tr>
+        <tr><td><span class="http-status status-503">503 Service Unavailable</span></td><td>Ödeme gateway'ine bağlantı kurulamadı veya uygun terminal bulunamadı</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">İşlem Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">NOT_FOUND</span></td><td><code>TRANSACTION_NOT_FOUND</code></td><td>Transaction not found</td><td><span class="http-status status-400">404</span></td><td>Belirtilen transaction_id bulunamadı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_TRANSACTION_ID</code></td><td>Invalid transaction ID format</td><td><span class="http-status status-400">400</span></td><td>transaction_id geçerli bir UUID formatında değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_MERCHANT</code></td><td>Invalid merchant or merchant not active</td><td><span class="http-status status-400">400</span></td><td>Merchant bulunamadı veya aktif değil</td></tr>
+        <tr><td><span class="error-code">CONFLICT</span></td><td><code>DUPLICATE_ORDER_ID</code></td><td>Order ID already exists for this merchant</td><td><span class="http-status status-422">409</span></td><td>Bu order_id ile daha önce işlem yapılmış</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_CARD_NUMBER</code></td><td>Invalid card number</td><td><span class="http-status status-400">400</span></td><td>Kart numarası geçersiz (Luhn kontrolü başarısız)</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_EXPIRY_DATE</code></td><td>Invalid or expired card expiry date</td><td><span class="http-status status-400">400</span></td><td>Kartın son kullanma tarihi geçmiş veya geçersiz</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_CVV</code></td><td>Invalid CVV</td><td><span class="http-status status-400">400</span></td><td>CVV kodu geçersiz</td></tr>
+        <tr><td><span class="error-code">INTERNAL_SERVER_ERROR</span></td><td><code>PAYMENT_GATEWAY_ERROR</code></td><td>Payment gateway error</td><td><span class="http-status status-500">500</span></td><td>Ödeme gateway'inden hata yanıtı alındı</td></tr>
+        <tr><td><span class="error-code">INTERNAL_SERVER_ERROR</span></td><td>—</td><td>An unexpected error occurred</td><td><span class="http-status status-500">500</span></td><td>Dahili servis hatası (gateway sorgu hatası, bağımlı servis erişilemiyor vb.); yeniden deneyin</td></tr>
+        <tr><td><span class="error-code">SERVICE_UNAVAILABLE</span></td><td><code>PAYMENT_GATEWAY_CONNECTION_FAILED</code></td><td>Payment gateway connection failed</td><td><span class="http-status status-503">503</span></td><td>Ödeme gateway'ine bağlantı kurulamadı</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Terminal Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">SERVICE_UNAVAILABLE</span></td><td><code>NO_ELIGIBLE_TERMINALS</code></td><td>No eligible terminals found, please contact operations team</td><td><span class="http-status status-503">503</span></td><td>İsteği karşılayabilecek hiçbir terminal yok; operasyon ekibiyle iletişime geçin</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>TERMINAL_VOID_NOT_SUPPORTED</code></td><td>Terminal does not support void</td><td><span class="http-status status-400">400</span></td><td>İşlemin bağlı olduğu terminal iptal işlemini desteklemiyor</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>TERMINAL_REFUND_NOT_SUPPORTED</code></td><td>Terminal does not support refund</td><td><span class="http-status status-400">400</span></td><td>İşlemin bağlı olduğu terminal iade işlemini desteklemiyor</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>SUB_MERCHANT_ID_REQUIRED</code></td><td>sub_merchant_id is required for selected terminal</td><td><span class="http-status status-400">400</span></td><td>Seçilen terminal için sub_merchant_id zorunludur</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">İptal (Void) Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>VOID_NOT_ALLOWED_DIFFERENT_DAY</code></td><td>Void not allowed for transactions created on different day</td><td><span class="http-status status-400">400</span></td><td>Farklı günde yapılan işlem iptal edilemez; iade kullanın</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>VOID_NOT_ALLOWED_TYPE</code></td><td>Transaction type not allowed for void</td><td><span class="http-status status-400">400</span></td><td>İşlem tipi iptal için uygun değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>VOID_NOT_ALLOWED_STATUS</code></td><td>Transaction status not allowed for void</td><td><span class="http-status status-400">400</span></td><td>İşlem durumu iptal için uygun değil</td></tr>
+        <tr><td><span class="error-code">CONFLICT</span></td><td><code>TRANSACTION_ALREADY_VOIDED</code></td><td>Transaction already voided</td><td><span class="http-status status-422">409</span></td><td>İşlem zaten iptal edilmiş</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">İade (Refund) Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_SAME_DAY</code></td><td>Refund not allowed in same day, use void</td><td><span class="http-status status-400">400</span></td><td>Aynı gün işlemler için iptal (void) kullanın</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_AFTER_30_DAYS</code></td><td>Refund not allowed after 30 days</td><td><span class="http-status status-400">400</span></td><td>30 günden eski işlemlere iade yapılamaz</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_TYPE</code></td><td>Transaction type not allowed for refund</td><td><span class="http-status status-400">400</span></td><td>İşlem tipi iade için uygun değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_STATUS</code></td><td>Transaction status not allowed for refund</td><td><span class="http-status status-400">400</span></td><td>İşlem durumu iade için uygun değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_VOIDED</code></td><td>Voided transaction cannot be refunded</td><td><span class="http-status status-400">400</span></td><td>İptal edilmiş işleme iade yapılamaz</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_AMOUNT_EXCEEDS_LIMIT</code></td><td>Refund amount exceeds available limit</td><td><span class="http-status status-400">400</span></td><td>İade tutarı mevcut iadesiz tutarı aşıyor</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_REFUND_AMOUNT</code></td><td>Invalid refund amount</td><td><span class="http-status status-400">400</span></td><td>Geçersiz iade tutarı (0 veya negatif)</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Capture (PreAuth) Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>CAPTURE_NOT_ALLOWED_TYPE</code></td><td>Transaction type not allowed for capture</td><td><span class="http-status status-400">400</span></td><td>Sadece PreAuth işlemlerine capture uygulanabilir</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>CAPTURE_NOT_ALLOWED_STATUS</code></td><td>Transaction status not allowed for capture</td><td><span class="http-status status-400">400</span></td><td>İşlem durumu capture için uygun değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>CAPTURE_AMOUNT_EXCEEDS_LIMIT</code></td><td>Capture amount exceeds pre-auth amount</td><td><span class="http-status status-400">400</span></td><td>Capture tutarı PreAuth tutarını aşamaz</td></tr>
+        <tr><td><span class="error-code">CONFLICT</span></td><td><code>PRE_AUTH_ALREADY_CAPTURED</code></td><td>Pre-authorization already captured</td><td><span class="http-status status-422">409</span></td><td>Bu PreAuth işlemi zaten capture edilmiş</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Limit &amp; Kural Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>MIN_AMOUNT_NOT_MET</code></td><td>Transaction amount is below minimum limit</td><td><span class="http-status status-400">400</span></td><td>İşlem tutarı minimum sınırın altında</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>MAX_AMOUNT_EXCEEDED</code></td><td>Transaction amount exceeds maximum limit</td><td><span class="http-status status-400">400</span></td><td>İşlem tutarı maksimum sınırı aşıyor</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>DAILY_LIMIT_EXCEEDED</code></td><td>Daily transaction limit exceeded</td><td><span class="http-status status-400">400</span></td><td>Günlük işlem tutarı limiti aşıldı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>MONTHLY_LIMIT_EXCEEDED</code></td><td>Monthly transaction limit exceeded</td><td><span class="http-status status-400">400</span></td><td>Aylık işlem tutarı limiti aşıldı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>DAILY_COUNT_EXCEEDED</code></td><td>Daily transaction count exceeded</td><td><span class="http-status status-400">400</span></td><td>Günlük işlem adedi limiti aşıldı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>MONTHLY_COUNT_EXCEEDED</code></td><td>Monthly transaction count exceeded</td><td><span class="http-status status-400">400</span></td><td>Aylık işlem adedi limiti aşıldı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INSTALLMENT_NOT_ALLOWED</code></td><td>Installment sales not allowed for this merchant</td><td><span class="http-status status-400">400</span></td><td>Merchant için taksitli ödeme aktif değil</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Hata Yanıtı Örneği</h3>
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-lang">JSON – BAD_REQUEST örneği</span>
+        <button class="copy-btn"><span>⎘</span> Kopyala</button>
+      </div>
+      <pre class="language-json"><code class="language-json">{
+  "success": false,
+  "error": {
+    "code": "BAD_REQUEST",
+    "subCode": "INVALID_CARD_NUMBER",
+    "message": "Invalid card number"
+  }
+}</code></pre>
+    </div>
+    <div class="code-block-wrapper" style="margin-top:8px;">
+      <div class="code-block-header">
+        <span class="code-lang">JSON – CONFLICT örneği</span>
+        <button class="copy-btn"><span>⎘</span> Kopyala</button>
+      </div>
+      <pre class="language-json"><code class="language-json">{
+  "success": false,
+  "error": {
+    "code": "CONFLICT",
+    "subCode": "DUPLICATE_ORDER_ID",
+    "message": "Order ID already exists for this merchant"
+  }
+}</code></pre>
+    </div>
+  </section>
+
+</main>
+
+<!-- Right-side Table of Contents -->
+<aside id="toc"></aside>
+
+<!-- Search overlay + modal -->
+<div id="search-overlay"></div>
+<div id="search-modal">
+  <input type="text" id="search-input" placeholder="Ara... (Ctrl+K)" autocomplete="off" />
+  <div id="search-results"></div>
+</div>
+
+<!-- Scroll to top button -->
+<button id="scrollTop" aria-label="Yukarı çık">↑</button>
+
+<!-- Prism.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

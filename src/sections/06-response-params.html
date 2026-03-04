@@ -1,0 +1,230 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       RESPONSE PARAMETRELERİ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="response-params" class="doc-section">
+    <span class="section-tag">Parametreler</span>
+    <h2 class="section-title">Response Parametreleri</h2>
+
+    <h3 class="sub-title">Ödeme Yanıtı – PaymentResponse</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">success</span></td>
+          <td><span class="param-type">boolean</span></td>
+          <td>İşlem başarı durumu</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload</span></td>
+          <td><span class="param-type">object</span></td>
+          <td>Yanıt verilerini içeren ana nesne</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.transaction_id</span></td>
+          <td><span class="param-type">string (UUID)</span></td>
+          <td>Payment Hub tarafından atanan benzersiz işlem ID'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td>İstekte gönderilen order_id değeri</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.html</span></td>
+          <td><span class="param-type">string</span></td>
+          <td>3D Secure işlemlerde banka 3D form HTML'i. Bu içerik sayfaya embed edilmelidir</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.html_url</span></td>
+          <td><span class="param-type">string</span></td>
+          <td>3D Secure için alternatif yönlendirme URL'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.amount_info</span></td>
+          <td><span class="param-type">object</span></td>
+          <td>İşlem tutar bilgileri (bkz. AmountInfo)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.gateway_response</span></td>
+          <td><span class="param-type">object</span></td>
+          <td>Payment Hub gateway yanıtı (code, message_tr, message_en)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.bank_response</span></td>
+          <td><span class="param-type">object</span></td>
+          <td>Banka yanıtı (code, message, auth_code, rrn)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">payload.date</span></td>
+          <td><span class="param-type">string</span></td>
+          <td>İşlem tarihi ve saati (ISO 8601)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">AmountInfo</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="param-name">amount</span></td><td><span class="param-type">float64</span></td><td>İşlem tutarı</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td>İşlem para birimi</td></tr>
+        <tr><td><span class="param-name">installment</span></td><td><span class="param-type">int</span></td><td>Taksit sayısı</td></tr>
+        <tr><td><span class="param-name">original_amount</span></td><td><span class="param-type">float64</span></td><td>Orijinal tutar</td></tr>
+        <tr><td><span class="param-name">original_currency</span></td><td><span class="param-type">string</span></td><td>Orijinal para birimi</td></tr>
+        <tr><td><span class="param-name">exchange_rate</span></td><td><span class="param-type">float64</span></td><td>Döviz kuru (TRY bazlı)</td></tr>
+        <tr><td><span class="param-name">base_amount</span></td><td><span class="param-type">float64</span></td><td>TRY cinsinden tutar</td></tr>
+        <tr><td><span class="param-name">base_currency</span></td><td><span class="param-type">string</span></td><td>TRY</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">GatewayResponse</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="param-name">code</span></td><td><span class="param-type">string</span></td><td>Gateway yanıt kodu (<code>00</code> = başarılı)</td></tr>
+        <tr><td><span class="param-name">message_tr</span></td><td><span class="param-type">string</span></td><td>Türkçe mesaj</td></tr>
+        <tr><td><span class="param-name">message_en</span></td><td><span class="param-type">string</span></td><td>İngilizce mesaj</td></tr>
+        <tr><td><span class="param-name">detail_tr</span></td><td><span class="param-type">string</span></td><td>Türkçe detay mesajı</td></tr>
+        <tr><td><span class="param-name">detail_en</span></td><td><span class="param-type">string</span></td><td>İngilizce detay mesajı</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">BankResponse</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="param-name">code</span></td><td><span class="param-type">string</span></td><td>Banka yanıt kodu</td></tr>
+        <tr><td><span class="param-name">message</span></td><td><span class="param-type">string</span></td><td>Banka mesajı</td></tr>
+        <tr><td><span class="param-name">auth_code</span></td><td><span class="param-type">string</span></td><td>Provizyon / otorizasyon kodu</td></tr>
+        <tr><td><span class="param-name">rrn</span></td><td><span class="param-type">string</span></td><td>Retrieval Reference Number</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── 3D Secure Callback ─── -->
+    <h3 class="sub-title" id="callback-3d-response">3D Secure Callback Parametreleri</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      3D doğrulama tamamlandıktan sonra aşağıdaki alanlar <code>application/x-www-form-urlencoded</code> olarak
+      <code>ok_url</code> (başarı) veya <code>fail_url</code> (başarısızlık) adresine HTTP POST ile gönderilir.
+      Bu yapı hem <strong>3D Secure Ödeme</strong> hem de <strong>PreAuth 3D</strong> işlemleri için geçerlidir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Format</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">success</span></td><td><span class="param-type">string</span></td><td><code>true</code> veya <code>false</code></td></tr>
+        <tr><td><span class="param-name">transaction_id</span></td><td><span class="param-type">string (UUID)</span></td><td>İşlem ID'si</td></tr>
+        <tr><td><span class="param-name">order_id</span></td><td><span class="param-type">string</span></td><td>Sipariş numarası</td></tr>
+        <tr><td><span class="param-name">amount</span></td><td><span class="param-type">string (%.4f)</span></td><td>İşlem tutarı — örn. <code>150.0000</code></td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td>İşlem para birimi</td></tr>
+        <tr><td><span class="param-name">installment</span></td><td><span class="param-type">string (%d)</span></td><td>Taksit sayısı</td></tr>
+        <tr><td><span class="param-name">gateway_response_code</span></td><td><span class="param-type">string</span></td><td>Gateway yanıt kodu (<code>00</code> = başarılı)</td></tr>
+        <tr><td><span class="param-name">gateway_response_message</span></td><td><span class="param-type">string</span></td><td>Gateway mesajı (Türkçe)</td></tr>
+        <tr><td><span class="param-name">bank_response_code</span></td><td><span class="param-type">string</span></td><td>Banka yanıt kodu</td></tr>
+        <tr><td><span class="param-name">bank_response_message</span></td><td><span class="param-type">string</span></td><td>Banka mesajı</td></tr>
+        <tr><td><span class="param-name">rrn</span></td><td><span class="param-type">string</span></td><td>Retrieval Reference Number</td></tr>
+        <tr><td><span class="param-name">auth_code</span></td><td><span class="param-type">string</span></td><td>Provizyon kodu</td></tr>
+        <tr><td><span class="param-name">bank_code</span></td><td><span class="param-type">string</span></td><td>Banka kodu</td></tr>
+        <tr><td><span class="param-name">date</span></td><td><span class="param-type">string (RFC3339)</span></td><td>İşlem tamamlanma zamanı</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Oturum Oluşturma Yanıtı ─── -->
+    <h3 class="sub-title" id="session-create-response">Oturum Oluşturma Yanıtı</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/sessions</code> başarılı yanıtı.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">success</span></td><td><span class="param-type">boolean</span></td><td>İşlem başarı durumu</td></tr>
+        <tr><td><span class="param-name">payload</span></td><td><span class="param-type">object</span></td><td>Yanıt verilerini içeren ana nesne</td></tr>
+        <tr><td><span class="param-name">payload.session_id</span></td><td><span class="param-type">string</span></td><td>Oluşturulan oturum ID'si</td></tr>
+        <tr><td><span class="param-name">payload.session_url</span></td><td><span class="param-type">string</span></td><td>Müşteriye gönderilecek ödeme sayfası URL'si</td></tr>
+        <tr><td><span class="param-name">payload.expires_at</span></td><td><span class="param-type">string (ISO 8601)</span></td><td>Oturumun son geçerlilik zamanı</td></tr>
+      </tbody>
+    </table>
+
+
+    <!-- ─── Ödeme Linki Yanıtı ─── -->
+    <h3 class="sub-title" id="link-create-response">Ödeme Linki Yanıtı</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/merchant/payment-links</code> ve tekil getirme endpoint'lerinin yanıt yapısı.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">id</span></td><td><span class="param-type">string (UUID)</span></td><td>Link benzersiz ID'si</td></tr>
+        <tr><td><span class="param-name">merchant_name</span></td><td><span class="param-type">string</span></td><td>Merchant adı</td></tr>
+        <tr><td><span class="param-name">link_code</span></td><td><span class="param-type">string</span></td><td>Benzersiz link kodu (ör. PAY-XZ7Y3K)</td></tr>
+        <tr><td><span class="param-name">link_url</span></td><td><span class="param-type">string</span></td><td>Müşteriye gönderilecek ödeme linki URL'si</td></tr>
+        <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td>Link başlığı</td></tr>
+        <tr><td><span class="param-name">description</span></td><td><span class="param-type">string</span></td><td>Link açıklaması</td></tr>
+        <tr><td><span class="param-name">total_amount</span></td><td><span class="param-type">float64</span></td><td>Toplam tutar</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td>Para birimi</td></tr>
+        <tr><td><span class="param-name">status</span></td><td><span class="param-type">string</span></td><td>ACTIVE, INACTIVE, EXPIRED, COMPLETED</td></tr>
+        <tr><td><span class="param-name">expires_at</span></td><td><span class="param-type">string</span></td><td>Son geçerlilik tarihi</td></tr>
+        <tr><td><span class="param-name">max_uses</span></td><td><span class="param-type">int</span></td><td>Maksimum kullanım sayısı</td></tr>
+        <tr><td><span class="param-name">used_count</span></td><td><span class="param-type">int</span></td><td>Kaç kez kullanıldı</td></tr>
+        <tr><td><span class="param-name">require_3ds</span></td><td><span class="param-type">boolean</span></td><td>3D Secure zorunlu mu?</td></tr>
+        <tr><td><span class="param-name">allow_non_3ds</span></td><td><span class="param-type">boolean</span></td><td>3D olmadan ödemeye izin var mı?</td></tr>
+        <tr><td><span class="param-name">products</span></td><td><span class="param-type">array</span></td><td>Ürün listesi (id, name, price, default_quantity, sku, subtotal)</td></tr>
+        <tr><td><span class="param-name">qr_code_url</span></td><td><span class="param-type">string</span></td><td>QR kod görseli URL'si</td></tr>
+        <tr><td><span class="param-name">created_at</span></td><td><span class="param-type">string</span></td><td>Oluşturulma tarihi (ISO 8601)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Koleksiyon Yanıtı ─── -->
+    <h3 class="sub-title" id="collection-create-response">Koleksiyon Yanıtı</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/merchant/collections</code> ve tekil getirme endpoint'lerinin yanıt yapısı.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">id</span></td><td><span class="param-type">string (UUID)</span></td><td>Koleksiyon benzersiz ID'si</td></tr>
+        <tr><td><span class="param-name">merchant_name</span></td><td><span class="param-type">string</span></td><td>Merchant adı</td></tr>
+        <tr><td><span class="param-name">link_code</span></td><td><span class="param-type">string</span></td><td>Benzersiz link kodu (ör. COL-AB3CD9)</td></tr>
+        <tr><td><span class="param-name">link_url</span></td><td><span class="param-type">string</span></td><td>Müşteriye gönderilecek koleksiyon URL'si</td></tr>
+        <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td>Koleksiyon başlığı</td></tr>
+        <tr><td><span class="param-name">description</span></td><td><span class="param-type">string</span></td><td>Açıklama</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td>Para birimi</td></tr>
+        <tr><td><span class="param-name">min_amount</span></td><td><span class="param-type">float64</span></td><td>Minimum ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">max_amount</span></td><td><span class="param-type">float64</span></td><td>Maksimum ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">status</span></td><td><span class="param-type">string</span></td><td>ACTIVE, INACTIVE, EXPIRED</td></tr>
+        <tr><td><span class="param-name">expires_at</span></td><td><span class="param-type">string</span></td><td>Son geçerlilik tarihi</td></tr>
+        <tr><td><span class="param-name">max_uses</span></td><td><span class="param-type">int</span></td><td>Maksimum kullanım sayısı</td></tr>
+        <tr><td><span class="param-name">used_count</span></td><td><span class="param-type">int</span></td><td>Kaç kez kullanıldı</td></tr>
+        <tr><td><span class="param-name">require_3ds</span></td><td><span class="param-type">boolean</span></td><td>3D Secure zorunlu mu?</td></tr>
+        <tr><td><span class="param-name">allow_non_3ds</span></td><td><span class="param-type">boolean</span></td><td>3D olmadan ödemeye izin var mı?</td></tr>
+        <tr><td><span class="param-name">qr_code_url</span></td><td><span class="param-type">string</span></td><td>QR kod görseli URL'si</td></tr>
+        <tr><td><span class="param-name">created_at</span></td><td><span class="param-type">string</span></td><td>Oluşturulma tarihi (ISO 8601)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Sayfalama (Pagination) ─── -->
+    <h3 class="sub-title" id="pagination-response">Sayfalama (Pagination)</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      Liste endpoint'lerinin (<code>GET .../payment-links</code>, <code>GET .../collections</code>) yanıtında
+      <code>pagination</code> nesnesi döner.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">total</span></td><td><span class="param-type">int</span></td><td>Toplam kayıt sayısı</td></tr>
+        <tr><td><span class="param-name">limit</span></td><td><span class="param-type">int</span></td><td>Sayfa başına kayıt sayısı</td></tr>
+        <tr><td><span class="param-name">offset</span></td><td><span class="param-type">int</span></td><td>Başlangıç kayıt indeksi</td></tr>
+        <tr><td><span class="param-name">current_page</span></td><td><span class="param-type">int</span></td><td>Mevcut sayfa numarası</td></tr>
+        <tr><td><span class="param-name">total_pages</span></td><td><span class="param-type">int</span></td><td>Toplam sayfa sayısı</td></tr>
+      </tbody>
+    </table>
+  </section>

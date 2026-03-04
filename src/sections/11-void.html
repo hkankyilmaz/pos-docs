@@ -1,0 +1,77 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       İPTAL (VOID)
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="void" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">İptal (Void)</h2>
+    <p class="section-desc">
+      İptal işlemi yalnızca <strong>aynı gün</strong> yapılan işlemlere uygulanabilir.
+      Farklı günlerdeki işlemler için <strong>İade (Refund)</strong> kullanılmalıdır.
+    </p>
+
+    <div class="callout callout-danger">
+      <span class="callout-icon">❌</span>
+      <div>Farklı günde gerçekleştirilmiş işleme iptal uygulanmaya çalışılırsa <code>ErrVoidNotAllowedDifferentDay</code> hatası alınır.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/void</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "order_id": "ORDER-12345",
+  "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc"
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": {
+    "transaction_id": "f1g2h3i4-j5k6-7890-mnop-qr1234567890",
+    "order_id": "ORDER-12345",
+    "original_transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "amount_info": {
+      "amount": 150.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 150.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 150.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İPTAL BAŞARILI",
+      "message_en": "VOID APPROVED"
+    },
+    "date": "2024-01-15T15:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

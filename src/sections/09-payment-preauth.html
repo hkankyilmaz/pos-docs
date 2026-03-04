@@ -1,0 +1,231 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       PREAUTH & CAPTURE
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-preauth" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">PreAuth &amp; Capture</h2>
+    <p class="section-desc">
+      Ön otorizasyon işlemi, müşterinin kartında belirli bir tutarı bloke eder.
+      İşlem tamamlandığında capture ile gerçek ödeme alınır.
+      PreAuth hem <strong>NonSecure</strong> (is_3d: false) hem de <strong>3D Secure</strong> (is_3d: true) olarak yapılabilir.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>Capture tutarı, PreAuth tutarını aşamaz. PreAuth zaten capture edilmişse tekrar capture yapılamaz.</div>
+    </div>
+
+    <h3 class="sub-title">Adım 1: PreAuth Başlatma – 3D Secure</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">transaction_type: PreAuth, is_3d: true</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "PreAuth",
+  "order_id": "ORDER-PREAUTH-3D-001",
+  "amount": 500.00,
+  "currency": "TRY",
+  "installment": 1,
+  "card_number": "4355084355084358",
+  "card_holder_name": "John Doe",
+  "exp_year": 2026,
+  "exp_month": 12,
+  "cvv": "000",
+  "is_3d": true,
+  "ok_url": "https://yoursite.com/preauth/success",
+  "fail_url": "https://yoursite.com/preauth/fail",
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "order_id": "ORDER-PREAUTH-3D-001",
+    "html": "&lt;!DOCTYPE html&gt;&lt;html&gt;...3D Secure Form HTML...&lt;/html&gt;",
+    "html_url": "https://payment-hub.example.com/api/v1/vpos/payments/3d-secure/d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "date": "2024-01-15T14:30:00Z"
+  }
+}</code></pre>
+            </div>
+            <div class="callout callout-warning" style="margin-top:12px;">
+              <span class="callout-icon">⚠️</span>
+              <div>Bu yanıt yalnızca 3D formunu içerir; <code>gateway_response</code> ve <code>bank_response</code> bu aşamada dönmez. Ödeme sonucu 3D doğrulama tamamlandıktan sonra <code>ok_url</code> / <code>fail_url</code>'e iletilir.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Adım 1: PreAuth Başlatma – NonSecure</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">transaction_type: PreAuth</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "PreAuth",
+  "order_id": "ORDER-PREAUTH-001",
+  "amount": 500.00,
+  "currency": "TRY",
+  "installment": 1,
+  "card_number": "4355084355084358",
+  "card_holder_name": "John Doe",
+  "exp_year": 2026,
+  "exp_month": 12,
+  "cvv": "000",
+  "is_3d": false,
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "order_id": "ORDER-PREAUTH-001",
+    "amount_info": {
+      "amount": 500.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 500.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 500.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İŞLEM BAŞARILI",
+      "message_en": "APPROVED",
+      "detail_tr": "İşlem başarıyla tamamlandı",
+      "detail_en": "Transaction successfully completed."
+    },
+    "bank_response": {
+      "code": "00",
+      "message": "000 ONAY KODU 091322",
+      "auth_code": "091322",
+      "rrn": "603125844346"
+    },
+    "date": "2024-01-15T14:30:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Adım 2: Capture</h3>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/capture-pre-authorization</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "order_id": "ORDER-PREAUTH-001",
+  "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+  "amount": 450.00
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": {
+    "transaction_id": "e5f6a7b8-c9d0-1234-abcd-ef5678901234",
+    "order_id": "ORDER-PREAUTH-001",
+    "original_transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "amount_info": {
+      "amount": 450.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 450.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 450.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "CAPTURE BAŞARILI",
+      "message_en": "CAPTURE APPROVED"
+    },
+    "date": "2024-01-15T16:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

@@ -1,0 +1,109 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       SORGULAMA
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="query" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">İşlem Sorgulama</h2>
+    <p class="section-desc">Bir işlemin güncel durumunu veya geçmiş kayıtlarını sorgulayabilirsiniz.</p>
+
+    <div class="endpoint-card" style="margin-bottom:20px;">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/query/{transaction_id}</span>
+        <span class="endpoint-desc">Anlık durum</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">GET /api/v1/vpos/payments/query/d4de0c6a-c51f-4aff-bf75-4989c9204bdc HTTP/1.1
+Host: api.payment-hub.example.com
+X-API-Key: your-api-key-here
+X-Hash: &lt;hash-of-transaction_id&gt;</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": {
+    "response_code": "00",
+    "response_message": "İşlem başarılı",
+    "transaction_status": "SUCCESS",
+    "auth_code": "091322",
+    "order_id": "ORDER-12345",
+    "amount": "150.00",
+    "bank_response_code": "00",
+    "bank_response_message": "000 ONAY KODU 091322"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/query-history/{transaction_id}</span>
+        <span class="endpoint-desc">Geçmiş kayıtlar</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">GET /api/v1/vpos/payments/query-history/d4de0c6a-c51f-4aff-bf75-4989c9204bdc HTTP/1.1
+Host: api.payment-hub.example.com
+X-API-Key: your-api-key-here
+X-Hash: &lt;hash-of-transaction_id&gt;</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": [
+    {
+      "response_code": "00",
+      "response_message": "İşlem başarılı",
+      "transaction_status": "SUCCESS",
+      "auth_code": "091322",
+      "order_id": "ORDER-12345",
+      "amount": "150.00",
+      "bank_response_code": "00",
+      "bank_response_message": "000 ONAY KODU 091322"
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

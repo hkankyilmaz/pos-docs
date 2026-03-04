@@ -1,0 +1,54 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       KİMLİK DOĞRULAMA
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="auth" class="doc-section">
+    <span class="section-tag">Kimlik Doğrulama</span>
+    <h2 class="section-title">Kimlik Doğrulama</h2>
+    <p class="section-desc">
+      Tüm API istekleri için <code>X-API-Key</code> header'ı zorunludur.
+      Ayrıca her istekte hash imzası (<code>X-Hash</code>) gönderilmelidir.
+    </p>
+
+    <h3 class="sub-title">Zorunlu Header'lar</h3>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Header</th>
+          <th>Zorunlu</th>
+          <th>Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">X-API-Key</span></td>
+          <td><span class="param-required">Zorunlu</span></td>
+          <td>Merchant servisinden alınan API anahtarı</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">X-Hash</span></td>
+          <td><span class="param-required">Zorunlu</span></td>
+          <td>İstek gövdesinden hesaplanan hash imzası (bkz. Hash Doğrulama)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">Content-Type</span></td>
+          <td><span class="param-required">Zorunlu</span></td>
+          <td><code>application/json</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-lang">HTTP Request Example</span>
+        <button class="copy-btn"><span>⎘</span> Kopyala</button>
+      </div>
+      <pre class="language-http"><code class="language-http">POST /api/v1/vpos/payments/payment HTTP/1.1
+Host: api.payment-hub.example.com
+Content-Type: application/json
+X-API-Key: your-api-key-here
+X-Hash: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d906</code></pre>
+    </div>
+  </section>

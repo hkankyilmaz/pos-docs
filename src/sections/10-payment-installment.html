@@ -1,0 +1,281 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAKSİTLİ ÖDEME
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="payment-installment" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">Taksitli Ödeme</h2>
+    <p class="section-desc">
+      Taksitli ödeme akışı üç adımdan oluşur: önce kartın BIN bilgisi sorgulanır, ardından
+      o karta özel taksit seçenekleri ve komisyon oranları alınır, son olarak seçilen taksit
+      sayısıyla ödeme gerçekleştirilir.
+    </p>
+
+    <div class="callout callout-warning">
+      <span class="callout-icon">⚠️</span>
+      <div>Merchant için taksitli ödeme aktif değilse <code>ErrInstallmentNotAllowed</code> hatası döner.</div>
+    </div>
+
+    <!-- ── Adım 1: BIN Sorgulama ── -->
+    <h3 class="sub-title" id="bin-query">Adım 1: Kart BIN Sorgulama</h3>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">
+      Kartın ilk 8 hanesi ile BIN sorgusu yapılır. Dönen yanıttaki banka (<code>member_name</code>),
+      kart şeması (<code>scheme_name</code>) ve marka (<code>brand_name</code>) bilgileri; taksit
+      seçeneklerini görüntülemek ve ödeme ekranını kişiselleştirmek için kullanılır.
+    </p>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/vpos/bins/query</span>
+        <span class="endpoint-desc">?bin=43550843</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">HTTP</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-http"><code class="language-http">GET /api/v1/vpos/bins/query?bin=43550843 HTTP/1.1
+X-API-Key: your-api-key
+X-Hash: {hash}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "bin_range_min": "43550800",
+      "bin_range_max": "43550899",
+      "main": true,
+      "card_no_length": 16,
+      "validate_for_check_digit": true,
+      "card_type_no": "1",
+      "card_type_full": "DEBIT",
+      "scheme_name": "VISA",
+      "type_name": "DEBIT",
+      "segment_name": "CONSUMER",
+      "brand_name": "VISA CLASSIC",
+      "member_no": 15,
+      "member_name": "Ziraat Bankası",
+      "active_for_clearing": true,
+      "active_for_fraud": true
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Adım 2: Taksit Seçenekleri ── -->
+    <h3 class="sub-title" id="payment-options">Adım 2: Taksit Seçenekleri ve Komisyonlar</h3>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">
+      BIN ve tutar bilgisiyle birlikte taksit seçenekleri sorgulandığında her taksit için
+      müşterinin ödeyeceği toplam tutar (<code>customer_pays</code>) ve aylık taksit tutarı
+      (<code>installment_amount</code>) hesaplanmış olarak döner.
+    </p>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment-options-with-amounts</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "bin": "43550843",
+  "amount": 1200.00
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "amount": 1200.00,
+  "single_payment": {
+    "installment_count": 1,
+    "merchant_commission_rate": 1.50,
+    "customer_pays": 1218.00,
+    "installment_amount": 1218.00,
+    "apply_surcharge": true
+  },
+  "installment_options": [
+    {
+      "bank": {
+        "name": "Ziraat Bankası",
+        "code": "0015",
+        "member_no": 15
+      },
+      "bank_card_brands": [
+        {
+          "card_brand": {
+            "name": "VISA CLASSIC",
+            "code": "VC"
+          },
+          "installments": [
+            {
+              "installment_count": 3,
+              "merchant_commission_rate": 2.50,
+              "customer_pays": 1230.00,
+              "installment_amount": 410.00,
+              "apply_surcharge": false
+            },
+            {
+              "installment_count": 6,
+              "merchant_commission_rate": 3.50,
+              "customer_pays": 1242.00,
+              "installment_amount": 207.00,
+              "apply_surcharge": false
+            },
+            {
+              "installment_count": 9,
+              "merchant_commission_rate": 4.50,
+              "customer_pays": 1254.00,
+              "installment_amount": 139.33,
+              "apply_surcharge": false
+            },
+            {
+              "installment_count": 12,
+              "merchant_commission_rate": 5.50,
+              "customer_pays": 1266.00,
+              "installment_amount": 105.50,
+              "apply_surcharge": false
+            }
+          ],
+          "max_installment_with_mcc": 12
+        }
+      ]
+    }
+  ]
+}</code></pre>
+            </div>
+            <div class="callout callout-info" style="margin-top:12px;">
+              <span class="callout-icon">ℹ️</span>
+              <div>
+                Karta göre taksit seçenekleri sorgulamadan genel seçenekleri listelemek için
+                <code>GET /api/v1/vpos/payments/payment-options</code> endpoint'ini kullanabilirsiniz
+                (BIN veya tutar gerektirmez).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Adım 3: Ödeme ── -->
+    <h3 class="sub-title">Adım 3: Taksitli Ödemeyi Gerçekleştir</h3>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">
+      Önceki adımda seçilen taksit sayısı <code>installment</code> alanına yazılarak ödeme isteği gönderilir.
+      3D Secure akışı için <code>is_3d: true</code> ve <code>ok_url</code> / <code>fail_url</code> eklenmelidir.
+    </p>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/payment</span>
+        <span class="endpoint-desc">installment ≥ 2</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "transaction_type": "Auth",
+  "order_id": "ORDER-INST-001",
+  "amount": 1200.00,
+  "currency": "TRY",
+  "installment": 6,
+  "card_number": "4355084355084358",
+  "card_holder_name": "John Doe",
+  "exp_year": 2026,
+  "exp_month": 12,
+  "cvv": "000",
+  "is_3d": false,
+  "customer_info": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+905551234567"
+  }
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "success": true,
+  "payload": {
+    "transaction_id": "c3d4e5f6-a7b8-9012-cdef-gh3456789012",
+    "order_id": "ORDER-INST-001",
+    "amount_info": {
+      "amount": 1200.00,
+      "currency": "TRY",
+      "installment": 6,
+      "original_amount": 1200.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 1200.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İŞLEM BAŞARILI",
+      "message_en": "APPROVED",
+      "detail_tr": "İşlem başarıyla tamamlandı",
+      "detail_en": "Transaction successfully completed."
+    },
+    "bank_response": {
+      "code": "00",
+      "message": "000 ONAY KODU 183447",
+      "auth_code": "183447",
+      "rrn": "612034912876"
+    },
+    "date": "2024-01-15T14:35:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

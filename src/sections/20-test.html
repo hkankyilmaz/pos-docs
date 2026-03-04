@@ -1,0 +1,150 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       TEST İŞLEMLERİ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="test" class="doc-section">
+    <span class="section-tag">Test Ortamı</span>
+    <h2 class="section-title">Test İşlemleri</h2>
+    <p class="section-desc">
+      Geliştirme ve entegrasyon testleri için aşağıdaki test kartlarını kullanabilirsiniz.
+      Test işlemleri gerçek bankacılık sistemine gönderilmez.
+    </p>
+
+    <div class="callout callout-warning">
+      <span class="callout-icon">⚠️</span>
+      <div>Test kartları yalnızca test ortamında geçerlidir. Production ortamında gerçek kart bilgileri kullanılmalıdır.</div>
+    </div>
+
+    <h3 class="sub-title">Sandbox Test Kartları</h3>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">
+      Aşağıdaki kartlar sandbox ortamında farklı ödeme senaryolarını test etmek için kullanılır.
+      Tüm kartlar için <strong>CVV: 000</strong>, <strong>SKT: 12/2026</strong>, kart sahibi herhangi bir isim olabilir.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>Sandbox ortamında CVV ve son kullanma tarihi doğrulaması yapılmaz.
+      Herhangi bir CVV (3-4 haneli) ve herhangi bir son kullanma tarihi kabul edilir.
+      Aşağıdaki değerler yalnızca önerilen standart test değerleridir.</div>
+    </div>
+    <div class="test-card-grid">
+      <div class="test-card">
+        <div class="tc-label">Başarılı Ödeme</div>
+        <div class="tc-number">4000 0000 0000 0001</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 00</div>
+        <span class="tc-result result-success">✓ ONAY</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Yetersiz Bakiye</div>
+        <div class="tc-number">4000 0000 0000 0002</div>
+        <div class="tc-meta">HTTP 402 &nbsp;|&nbsp; ISO: 51</div>
+        <span class="tc-result result-fail">✗ YETERSİZ BAKİYE</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">İşlem Onaylanmadı</div>
+        <div class="tc-number">4000 0000 0000 0003</div>
+        <div class="tc-meta">HTTP 402 &nbsp;|&nbsp; ISO: 05</div>
+        <span class="tc-result result-fail">✗ DO NOT HONOR</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Geçersiz Kart Numarası</div>
+        <div class="tc-number">4000 0000 0000 0004</div>
+        <div class="tc-meta">HTTP 400 &nbsp;|&nbsp; ISO: 14</div>
+        <span class="tc-result result-fail">✗ GEÇERSİZ KART</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Fraud Şüphesi</div>
+        <div class="tc-number">4000 0000 0000 0005</div>
+        <div class="tc-meta">HTTP 402 &nbsp;|&nbsp; ISO: 34</div>
+        <span class="tc-result result-fail">✗ FRAUD ŞÜPHESİ</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Sistem Hatası</div>
+        <div class="tc-number">4000 0000 0000 0006</div>
+        <div class="tc-meta">HTTP 500 &nbsp;|&nbsp; ISO: 96</div>
+        <span class="tc-result result-fail">✗ SİSTEM HATASI</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Gateway Timeout</div>
+        <div class="tc-number">4000 0000 0000 0007</div>
+        <div class="tc-meta">HTTP 504 &nbsp;|&nbsp; ISO: 91</div>
+        <span class="tc-result result-fail">✗ TIMEOUT</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">3D Secure Akışı</div>
+        <div class="tc-number">4000 0000 0000 0008</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 00</div>
+        <span class="tc-result result-success">✓ 3D ONAY</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Süresi Dolmuş Kart</div>
+        <div class="tc-number">4000 0000 0000 0009</div>
+        <div class="tc-meta">HTTP 400 &nbsp;|&nbsp; ISO: 54</div>
+        <span class="tc-result result-fail">✗ SÜRESİ DOLMUŞ</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Ön Provizyon</div>
+        <div class="tc-number">4000 0000 0000 0010</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 00</div>
+        <span class="tc-result result-success">✓ PRE-AUTH ONAY</span>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Test Ortamı Bilgileri</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Parametre</th><th>Değer</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>CVV</td>
+          <td><code>000</code> (herhangi bir 3-4 haneli değer kabul edilir)</td>
+        </tr>
+        <tr>
+          <td>Son Kullanma Tarihi</td>
+          <td><code>12/2026</code> (herhangi bir tarih kabul edilir, süresi dolmuş dahil)</td>
+        </tr>
+        <tr>
+          <td>Kart Sahibi</td>
+          <td>Herhangi bir isim</td>
+        </tr>
+        <tr>
+          <td>3D OTP (test)</td>
+          <td><code>123456</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Örnek Test İsteği (cURL)</h3>
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-lang">cURL</span>
+        <button class="copy-btn"><span>⎘</span> Kopyala</button>
+      </div>
+      <pre class="language-bash"><code class="language-bash">curl -X POST https://api.payment-hub.example.com/api/v1/vpos/payments/payment \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-test-api-key" \
+  -H "X-Hash: your-calculated-hash" \
+  -d '{
+    "transaction_type": "Auth",
+    "order_id": "TEST-ORDER-001",
+    "amount": 100.00,
+    "currency": "TRY",
+    "installment": 1,
+    "card_number": "4000000000000001",
+    "card_holder_name": "Test User",
+    "exp_year": 2026,
+    "exp_month": 12,
+    "cvv": "000",
+    "is_3d": false,
+    "customer_info": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "john@example.com",
+      "phone": "+905551234567"
+    }
+  }'</code></pre>
+    </div>
+  </section>

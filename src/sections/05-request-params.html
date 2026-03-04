@@ -1,0 +1,370 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       REQUEST PARAMETRELERİ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="request-params" class="doc-section">
+    <span class="section-tag">Parametreler</span>
+    <h2 class="section-title">Request Parametreleri</h2>
+
+    <!-- Payment Request -->
+    <h3 class="sub-title">Ödeme İsteği – PaymentRequest</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/vpos/payments/payment</code> endpoint'i için kullanılır.
+    </p>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Alan</th>
+          <th>Tip</th>
+          <th>Zorunlu</th>
+          <th>Açıklama</th>
+          <th>Örnek</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">transaction_type</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td><code>Auth</code> (satış) veya <code>PreAuth</code> (ön otorizasyon)</td>
+          <td><code>Auth</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Benzersiz sipariş numarası</td>
+          <td><code>ORDER-12345</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">amount</span></td>
+          <td><span class="param-type">float64</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Ödeme tutarı (0'dan büyük olmalı)</td>
+          <td><code>100.00</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">currency</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td><code>TRY</code>, <code>USD</code>, <code>EUR</code>, <code>GBP</code>, <code>CHF</code>, <code>JPY</code></td>
+          <td><code>TRY</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">installment</span></td>
+          <td><span class="param-type">int32</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Taksit sayısı (1 = peşin, 2-12 = taksitli)</td>
+          <td><code>1</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">card_number</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>16 haneli kart numarası</td>
+          <td><code>4355084355084358</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">card_holder_name</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Kart üzerindeki isim</td>
+          <td><code>John Doe</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">exp_year</span></td>
+          <td><span class="param-type">int32</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Son kullanma yılı (4 haneli)</td>
+          <td><code>2025</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">exp_month</span></td>
+          <td><span class="param-type">int32</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Son kullanma ayı (1–12)</td>
+          <td><code>12</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">cvv</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Kart güvenlik kodu (3 hane)</td>
+          <td><code>000</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">is_3d</span></td>
+          <td><span class="param-type">bool</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td><code>true</code> = 3D Secure, <code>false</code> = NonSecure (varsayılan: false)</td>
+          <td><code>false</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">ok_url</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>3D başarı dönüş URL'si (is_3d=true ise önerilir)</td>
+          <td><code>https://site.com/ok</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">fail_url</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>3D hata dönüş URL'si (is_3d=true ise önerilir)</td>
+          <td><code>https://site.com/fail</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">sub_merchant_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Alt üye işyeri ID'si (terminal bazı alt merchant gerektiriyorsa zorunlu)</td>
+          <td><code>SUBM-12345</code></td>
+        </tr>
+        <tr>
+          <td><span class="param-name">customer_info</span></td>
+          <td><span class="param-type">object</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Müşteri bilgileri (first_name, last_name, email, phone)</td>
+          <td>–</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Void Request -->
+    <h3 class="sub-title">İptal İsteği – VoidRequest</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>İptal edilecek siparişin order_id değeri</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">transaction_id</span></td>
+          <td><span class="param-type">string (UUID)</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>İptal edilecek işlem ID'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">sub_merchant_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Alt üye işyeri ID'si</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Refund Request -->
+    <h3 class="sub-title">İade İsteği – RefundRequest</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>İade edilecek siparişin order_id değeri</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">transaction_id</span></td>
+          <td><span class="param-type">string (UUID)</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>İade edilecek işlem ID'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">amount</span></td>
+          <td><span class="param-type">float64</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>İade tutarı. Belirtilmezse tam iade yapılır</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">sub_merchant_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Alt üye işyeri ID'si</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Capture Request -->
+    <h3 class="sub-title">Capture İsteği – CapturePreAuthorizationRequest</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="param-name">order_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Sipariş numarası</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">transaction_id</span></td>
+          <td><span class="param-type">string (UUID)</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>PreAuth işlem ID'si</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">amount</span></td>
+          <td><span class="param-type">float64</span></td>
+          <td><span class="param-required">Evet</span></td>
+          <td>Capture edilecek tutar (PreAuth tutarını aşamaz)</td>
+        </tr>
+        <tr>
+          <td><span class="param-name">sub_merchant_id</span></td>
+          <td><span class="param-type">string</span></td>
+          <td><span class="param-optional">Hayır</span></td>
+          <td>Alt üye işyeri ID'si</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ─── BIN Sorgulama ─── -->
+    <h3 class="sub-title" id="bin-query-request">BIN Sorgulama</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>GET /api/v1/vpos/bins/query</code> – Kartın ilk 8 hanesiyle BIN bilgisi sorgulanır.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">bin</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Kartın ilk 8 hanesi (query parameter)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Taksit Seçenekleri ─── -->
+    <h3 class="sub-title" id="payment-options-request">Taksit Seçenekleri ve Komisyonlar</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/vpos/payments/payment-options-with-amounts</code> – BIN ve tutar bilgisiyle taksit seçenekleri sorgulanır.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">bin</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Kartın ilk 8 hanesi</td></tr>
+        <tr><td><span class="param-name">amount</span></td><td><span class="param-type">float64</span></td><td><span class="param-required">Evet</span></td><td>İşlem tutarı (0'dan büyük olmalı)</td></tr>
+        <tr><td><span class="param-name">mcc_code</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>MCC kodu filtresi</td></tr>
+        <tr><td><span class="param-name">apply_surcharge_single</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>Peşin ödemede vade farkı uygula</td></tr>
+        <tr><td><span class="param-name">apply_surcharge_installment</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>Taksitli ödemede vade farkı uygula</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── İşlem Sorgulama ─── -->
+    <h3 class="sub-title" id="query-request">İşlem Sorgulama</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>GET /api/v1/vpos/payments/query/{transaction_id}</code> ve
+      <code>GET /api/v1/vpos/payments/query-history/{transaction_id}</code> – İşlem durumu veya geçmişi sorgulanır.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">transaction_id</span></td><td><span class="param-type">string (UUID)</span></td><td><span class="param-required">Evet</span></td><td>Sorgulanacak işlemin ID'si (path parameter)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Oturum Oluşturma ─── -->
+    <h3 class="sub-title" id="session-create-request">Oturum Oluşturma – Payment Session</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/sessions</code> – Tek kullanımlık ödeme oturumu oluşturur. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">amount</span></td><td><span class="param-type">float64</span></td><td><span class="param-required">Evet</span></td><td>Ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>TRY, USD, EUR, GBP, CHF, JPY</td></tr>
+        <tr><td><span class="param-name">order_id</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Benzersiz sipariş numarası</td></tr>
+        <tr><td><span class="param-name">ok_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Başarı dönüş URL'si</td></tr>
+        <tr><td><span class="param-name">fail_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Hata dönüş URL'si</td></tr>
+        <tr><td><span class="param-name">customer_info</span></td><td><span class="param-type">object</span></td><td><span class="param-optional">Hayır</span></td><td>first_name, last_name, email, phone</td></tr>
+        <tr><td><span class="param-name">metadata</span></td><td><span class="param-type">object</span></td><td><span class="param-optional">Hayır</span></td><td>Serbest formatta ek veri</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Ödeme Linki Oluşturma ─── -->
+    <h3 class="sub-title" id="link-create-request">Ödeme Linki Oluşturma</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/merchant/payment-links</code> – Yeni ödeme linki oluşturur. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Link başlığı</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>TRY, USD, EUR, GBP, CHF, JPY</td></tr>
+        <tr><td><span class="param-name">products</span></td><td><span class="param-type">array</span></td><td><span class="param-required">Evet</span></td><td>En az 1 ürün zorunludur</td></tr>
+        <tr><td><span class="param-name">products[].price</span></td><td><span class="param-type">float64</span></td><td><span class="param-required">Evet</span></td><td>Ürün birim fiyatı</td></tr>
+        <tr><td><span class="param-name">products[].default_quantity</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Varsayılan miktar (min 1)</td></tr>
+        <tr><td><span class="param-name">products[].display_order</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Ürünün görüntüleme sırası</td></tr>
+        <tr><td><span class="param-name">products[].name</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Ürün adı</td></tr>
+        <tr><td><span class="param-name">products[].sku</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Stok kodu</td></tr>
+        <tr><td><span class="param-name">products[].image_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Ürün görseli URL'si</td></tr>
+        <tr><td><span class="param-name">description</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Link açıklaması</td></tr>
+        <tr><td><span class="param-name">expires_at</span></td><td><span class="param-type">datetime</span></td><td><span class="param-optional">Hayır</span></td><td>Son geçerlilik tarihi (ISO 8601)</td></tr>
+        <tr><td><span class="param-name">max_uses</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Maksimum kullanım sayısı</td></tr>
+        <tr><td><span class="param-name">ok_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Başarı dönüş URL'si</td></tr>
+        <tr><td><span class="param-name">fail_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Hata dönüş URL'si</td></tr>
+        <tr><td><span class="param-name">require_3ds</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>3D Secure zorunlu mu?</td></tr>
+        <tr><td><span class="param-name">allow_non_3ds</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>3D Secure olmadan ödemeye izin ver</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Ödeme Linki Listeleme ─── -->
+    <h3 class="sub-title" id="link-list-request">Ödeme Linki Listeleme</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>GET /api/v1/merchant/payment-links</code> – Ödeme linklerini listeler. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Parametre</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">page</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Sayfa numarası (varsayılan: 1)</td></tr>
+        <tr><td><span class="param-name">limit</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Sayfa başına kayıt (maks 100)</td></tr>
+        <tr><td><span class="param-name">status</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>ACTIVE, INACTIVE, EXPIRED, COMPLETED</td></tr>
+        <tr><td><span class="param-name">search</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Başlık veya link kodu ile arama</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Para birimi filtresi</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Koleksiyon Oluşturma ─── -->
+    <h3 class="sub-title" id="collection-create-request">Koleksiyon Oluşturma</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>POST /api/v1/merchant/collections</code> – Serbest tutarlı ödeme sayfası oluşturur. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Alan</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>Koleksiyon başlığı</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-required">Evet</span></td><td>TRY, USD, EUR, GBP, CHF, JPY</td></tr>
+        <tr><td><span class="param-name">description</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Açıklama metni</td></tr>
+        <tr><td><span class="param-name">min_amount</span></td><td><span class="param-type">float64</span></td><td><span class="param-optional">Hayır</span></td><td>Minimum ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">max_amount</span></td><td><span class="param-type">float64</span></td><td><span class="param-optional">Hayır</span></td><td>Maksimum ödeme tutarı</td></tr>
+        <tr><td><span class="param-name">expires_at</span></td><td><span class="param-type">datetime</span></td><td><span class="param-optional">Hayır</span></td><td>Son geçerlilik tarihi (ISO 8601)</td></tr>
+        <tr><td><span class="param-name">max_uses</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Maksimum kullanım sayısı</td></tr>
+        <tr><td><span class="param-name">ok_url / fail_url</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Dönüş URL'leri</td></tr>
+        <tr><td><span class="param-name">require_3ds</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>3D Secure zorunlu mu?</td></tr>
+        <tr><td><span class="param-name">allow_non_3ds</span></td><td><span class="param-type">bool</span></td><td><span class="param-optional">Hayır</span></td><td>3D Secure olmadan ödemeye izin ver</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Koleksiyon Listeleme ─── -->
+    <h3 class="sub-title" id="collection-list-request">Koleksiyon Listeleme</h3>
+    <p class="section-desc" style="margin-bottom:12px;">
+      <code>GET /api/v1/merchant/collections</code> – Koleksiyonları listeler. <strong>X-API-Key + X-Hash</strong> gerektirir.
+    </p>
+    <table class="param-table">
+      <thead><tr><th>Parametre</th><th>Tip</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+      <tbody>
+        <tr><td><span class="param-name">page</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Sayfa numarası (varsayılan: 1)</td></tr>
+        <tr><td><span class="param-name">limit</span></td><td><span class="param-type">int</span></td><td><span class="param-optional">Hayır</span></td><td>Sayfa başına kayıt (maks 100)</td></tr>
+        <tr><td><span class="param-name">status</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>ACTIVE, INACTIVE, EXPIRED</td></tr>
+        <tr><td><span class="param-name">search</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Başlık veya link kodu ile arama</td></tr>
+        <tr><td><span class="param-name">currency</span></td><td><span class="param-type">string</span></td><td><span class="param-optional">Hayır</span></td><td>Para birimi filtresi</td></tr>
+      </tbody>
+    </table>
+
+  </section>

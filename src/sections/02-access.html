@@ -1,0 +1,78 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       ERİŞİM ADRESLERİ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="access" class="doc-section">
+    <span class="section-tag">Erişim Adresleri</span>
+    <h2 class="section-title">Erişim Adresleri</h2>
+    <p class="section-desc">Tüm API istekleri HTTPS üzerinden yapılmalıdır.</p>
+
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="card-label">Production Base URL</div>
+        <div class="card-value"><a href="#">https://api.payment-hub.example.com</a></div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">API Version Prefix</div>
+        <div class="card-value">/api/v1</div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">HTTP Port</div>
+        <div class="card-value">443 (HTTPS)</div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Content-Type</div>
+        <div class="card-value">application/json</div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>Tüm endpoint'ler <code>/api/v1/vpos/payments/</code> prefix'i ile başlar. Tüm istek ve yanıtlar UTF-8 kodlu JSON formatındadır.</div>
+    </div>
+
+    <h3 class="sub-title">Endpoint Listesi</h3>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Metod</th>
+          <th>Endpoint</th>
+          <th>Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="method-badge method-post">POST</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/payment</span></td>
+          <td>Ödeme başlatma (3D / NonSecure / PreAuth)</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-post">POST</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/capture-pre-authorization</span></td>
+          <td>PreAuth capture işlemi</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-post">POST</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/refund</span></td>
+          <td>İade işlemi</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-post">POST</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/void</span></td>
+          <td>İptal işlemi</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-get">GET</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/query/{transaction_id}</span></td>
+          <td>İşlem sorgulama</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge method-get">GET</span></td>
+          <td><span class="param-name">/api/v1/vpos/payments/query-history/{transaction_id}</span></td>
+          <td>İşlem geçmişi sorgulama</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>

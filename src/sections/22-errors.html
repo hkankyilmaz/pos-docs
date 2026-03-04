@@ -1,0 +1,151 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       HATA KODLARI
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="errors" class="doc-section">
+    <span class="section-tag">Referans</span>
+    <h2 class="section-title">Uygulama Hata Kodları</h2>
+    <p class="section-desc">
+      Payment Hub'ın döndürdüğü uygulama seviyesi hata kodları. Hata yanıtı
+      <code>success: false</code> ile birlikte <code>error.code</code>, <code>error.subCode</code> ve <code>error.message</code> alanlarını içerir.
+      <code>subCode</code> sayesinde istemciler <code>message</code> string'ini parse etmeden programatik hata yönetimi yapabilir.
+    </p>
+
+    <h3 class="sub-title">HTTP Durum Kodları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>HTTP Kodu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="http-status status-200">200 OK</span></td><td>İşlem başarıyla tamamlandı</td></tr>
+        <tr><td><span class="http-status status-400">400 Bad Request</span></td><td>Geçersiz istek parametresi veya eksik zorunlu alan</td></tr>
+        <tr><td><span class="http-status status-401">401 Unauthorized</span></td><td>Geçersiz API key, geçersiz hash imzası veya yetkisiz erişim</td></tr>
+        <tr><td><span class="http-status status-422">409 Conflict</span></td><td>Çakışan kayıt (ör. aynı order_id, zaten iptal edilmiş işlem)</td></tr>
+        <tr><td><span class="http-status status-422">422 Unprocessable Entity</span></td><td>İş kuralı ihlali (ör. aynı gün iptal, limit aşımı)</td></tr>
+        <tr><td><span class="http-status status-500">500 Internal Server Error</span></td><td>Sunucu tarafı beklenmedik hata (dahili servis hatası, gateway sorgu hatası vb.)</td></tr>
+        <tr><td><span class="http-status status-503">503 Service Unavailable</span></td><td>Ödeme gateway'ine bağlantı kurulamadı veya uygun terminal bulunamadı</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">İşlem Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">NOT_FOUND</span></td><td><code>TRANSACTION_NOT_FOUND</code></td><td>Transaction not found</td><td><span class="http-status status-400">404</span></td><td>Belirtilen transaction_id bulunamadı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_TRANSACTION_ID</code></td><td>Invalid transaction ID format</td><td><span class="http-status status-400">400</span></td><td>transaction_id geçerli bir UUID formatında değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_MERCHANT</code></td><td>Invalid merchant or merchant not active</td><td><span class="http-status status-400">400</span></td><td>Merchant bulunamadı veya aktif değil</td></tr>
+        <tr><td><span class="error-code">CONFLICT</span></td><td><code>DUPLICATE_ORDER_ID</code></td><td>Order ID already exists for this merchant</td><td><span class="http-status status-422">409</span></td><td>Bu order_id ile daha önce işlem yapılmış</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_CARD_NUMBER</code></td><td>Invalid card number</td><td><span class="http-status status-400">400</span></td><td>Kart numarası geçersiz (Luhn kontrolü başarısız)</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_EXPIRY_DATE</code></td><td>Invalid or expired card expiry date</td><td><span class="http-status status-400">400</span></td><td>Kartın son kullanma tarihi geçmiş veya geçersiz</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_CVV</code></td><td>Invalid CVV</td><td><span class="http-status status-400">400</span></td><td>CVV kodu geçersiz</td></tr>
+        <tr><td><span class="error-code">INTERNAL_SERVER_ERROR</span></td><td><code>PAYMENT_GATEWAY_ERROR</code></td><td>Payment gateway error</td><td><span class="http-status status-500">500</span></td><td>Ödeme gateway'inden hata yanıtı alındı</td></tr>
+        <tr><td><span class="error-code">INTERNAL_SERVER_ERROR</span></td><td>—</td><td>An unexpected error occurred</td><td><span class="http-status status-500">500</span></td><td>Dahili servis hatası (gateway sorgu hatası, bağımlı servis erişilemiyor vb.); yeniden deneyin</td></tr>
+        <tr><td><span class="error-code">SERVICE_UNAVAILABLE</span></td><td><code>PAYMENT_GATEWAY_CONNECTION_FAILED</code></td><td>Payment gateway connection failed</td><td><span class="http-status status-503">503</span></td><td>Ödeme gateway'ine bağlantı kurulamadı</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Terminal Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">SERVICE_UNAVAILABLE</span></td><td><code>NO_ELIGIBLE_TERMINALS</code></td><td>No eligible terminals found, please contact operations team</td><td><span class="http-status status-503">503</span></td><td>İsteği karşılayabilecek hiçbir terminal yok; operasyon ekibiyle iletişime geçin</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>TERMINAL_VOID_NOT_SUPPORTED</code></td><td>Terminal does not support void</td><td><span class="http-status status-400">400</span></td><td>İşlemin bağlı olduğu terminal iptal işlemini desteklemiyor</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>TERMINAL_REFUND_NOT_SUPPORTED</code></td><td>Terminal does not support refund</td><td><span class="http-status status-400">400</span></td><td>İşlemin bağlı olduğu terminal iade işlemini desteklemiyor</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>SUB_MERCHANT_ID_REQUIRED</code></td><td>sub_merchant_id is required for selected terminal</td><td><span class="http-status status-400">400</span></td><td>Seçilen terminal için sub_merchant_id zorunludur</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">İptal (Void) Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>VOID_NOT_ALLOWED_DIFFERENT_DAY</code></td><td>Void not allowed for transactions created on different day</td><td><span class="http-status status-400">400</span></td><td>Farklı günde yapılan işlem iptal edilemez; iade kullanın</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>VOID_NOT_ALLOWED_TYPE</code></td><td>Transaction type not allowed for void</td><td><span class="http-status status-400">400</span></td><td>İşlem tipi iptal için uygun değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>VOID_NOT_ALLOWED_STATUS</code></td><td>Transaction status not allowed for void</td><td><span class="http-status status-400">400</span></td><td>İşlem durumu iptal için uygun değil</td></tr>
+        <tr><td><span class="error-code">CONFLICT</span></td><td><code>TRANSACTION_ALREADY_VOIDED</code></td><td>Transaction already voided</td><td><span class="http-status status-422">409</span></td><td>İşlem zaten iptal edilmiş</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">İade (Refund) Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_SAME_DAY</code></td><td>Refund not allowed in same day, use void</td><td><span class="http-status status-400">400</span></td><td>Aynı gün işlemler için iptal (void) kullanın</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_AFTER_30_DAYS</code></td><td>Refund not allowed after 30 days</td><td><span class="http-status status-400">400</span></td><td>30 günden eski işlemlere iade yapılamaz</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_TYPE</code></td><td>Transaction type not allowed for refund</td><td><span class="http-status status-400">400</span></td><td>İşlem tipi iade için uygun değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_STATUS</code></td><td>Transaction status not allowed for refund</td><td><span class="http-status status-400">400</span></td><td>İşlem durumu iade için uygun değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_NOT_ALLOWED_VOIDED</code></td><td>Voided transaction cannot be refunded</td><td><span class="http-status status-400">400</span></td><td>İptal edilmiş işleme iade yapılamaz</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>REFUND_AMOUNT_EXCEEDS_LIMIT</code></td><td>Refund amount exceeds available limit</td><td><span class="http-status status-400">400</span></td><td>İade tutarı mevcut iadesiz tutarı aşıyor</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INVALID_REFUND_AMOUNT</code></td><td>Invalid refund amount</td><td><span class="http-status status-400">400</span></td><td>Geçersiz iade tutarı (0 veya negatif)</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Capture (PreAuth) Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>CAPTURE_NOT_ALLOWED_TYPE</code></td><td>Transaction type not allowed for capture</td><td><span class="http-status status-400">400</span></td><td>Sadece PreAuth işlemlerine capture uygulanabilir</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>CAPTURE_NOT_ALLOWED_STATUS</code></td><td>Transaction status not allowed for capture</td><td><span class="http-status status-400">400</span></td><td>İşlem durumu capture için uygun değil</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>CAPTURE_AMOUNT_EXCEEDS_LIMIT</code></td><td>Capture amount exceeds pre-auth amount</td><td><span class="http-status status-400">400</span></td><td>Capture tutarı PreAuth tutarını aşamaz</td></tr>
+        <tr><td><span class="error-code">CONFLICT</span></td><td><code>PRE_AUTH_ALREADY_CAPTURED</code></td><td>Pre-authorization already captured</td><td><span class="http-status status-422">409</span></td><td>Bu PreAuth işlemi zaten capture edilmiş</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Limit &amp; Kural Hataları</h3>
+    <table class="error-table">
+      <thead>
+        <tr><th>error.code</th><th>subCode</th><th>error.message</th><th>HTTP</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>MIN_AMOUNT_NOT_MET</code></td><td>Transaction amount is below minimum limit</td><td><span class="http-status status-400">400</span></td><td>İşlem tutarı minimum sınırın altında</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>MAX_AMOUNT_EXCEEDED</code></td><td>Transaction amount exceeds maximum limit</td><td><span class="http-status status-400">400</span></td><td>İşlem tutarı maksimum sınırı aşıyor</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>DAILY_LIMIT_EXCEEDED</code></td><td>Daily transaction limit exceeded</td><td><span class="http-status status-400">400</span></td><td>Günlük işlem tutarı limiti aşıldı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>MONTHLY_LIMIT_EXCEEDED</code></td><td>Monthly transaction limit exceeded</td><td><span class="http-status status-400">400</span></td><td>Aylık işlem tutarı limiti aşıldı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>DAILY_COUNT_EXCEEDED</code></td><td>Daily transaction count exceeded</td><td><span class="http-status status-400">400</span></td><td>Günlük işlem adedi limiti aşıldı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>MONTHLY_COUNT_EXCEEDED</code></td><td>Monthly transaction count exceeded</td><td><span class="http-status status-400">400</span></td><td>Aylık işlem adedi limiti aşıldı</td></tr>
+        <tr><td><span class="error-code">BAD_REQUEST</span></td><td><code>INSTALLMENT_NOT_ALLOWED</code></td><td>Installment sales not allowed for this merchant</td><td><span class="http-status status-400">400</span></td><td>Merchant için taksitli ödeme aktif değil</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Hata Yanıtı Örneği</h3>
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-lang">JSON – BAD_REQUEST örneği</span>
+        <button class="copy-btn"><span>⎘</span> Kopyala</button>
+      </div>
+      <pre class="language-json"><code class="language-json">{
+  "success": false,
+  "error": {
+    "code": "BAD_REQUEST",
+    "subCode": "INVALID_CARD_NUMBER",
+    "message": "Invalid card number"
+  }
+}</code></pre>
+    </div>
+    <div class="code-block-wrapper" style="margin-top:8px;">
+      <div class="code-block-header">
+        <span class="code-lang">JSON – CONFLICT örneği</span>
+        <button class="copy-btn"><span>⎘</span> Kopyala</button>
+      </div>
+      <pre class="language-json"><code class="language-json">{
+  "success": false,
+  "error": {
+    "code": "CONFLICT",
+    "subCode": "DUPLICATE_ORDER_ID",
+    "message": "Order ID already exists for this merchant"
+  }
+}</code></pre>
+    </div>
+  </section>

@@ -1,0 +1,98 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       İADE (REFUND)
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="refund" class="doc-section">
+    <span class="section-tag">İşlemler</span>
+    <h2 class="section-title">İade (Refund)</h2>
+    <p class="section-desc">
+      İade işlemi önceki günlerde gerçekleştirilen ödemeler için kullanılır.
+      Kısmi iade yapmak için <code>amount</code> alanı gönderin; tam iade için belirtmeyebilirsiniz.
+    </p>
+
+    <div class="card-grid" style="margin-bottom:16px;">
+      <div class="info-card">
+        <div class="card-label">Maksimum İade Süresi</div>
+        <div class="card-value">30 gün</div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Aynı Gün İşlem</div>
+        <div class="card-value">İptal (Void) kullanın</div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Kısmi İade</div>
+        <div class="card-value">amount alanıyla desteklenir</div>
+      </div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-post">POST</span>
+        <span class="endpoint-path">/api/v1/vpos/payments/refund</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tabs">
+          <div class="tab-list">
+            <button class="tab-btn active">Request</button>
+            <button class="tab-btn">Response</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON – Tam İade</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "order_id": "ORDER-67890",
+  "transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+}</code></pre>
+            </div>
+            <div class="code-block-wrapper" style="margin-top:12px;">
+              <div class="code-block-header">
+                <span class="code-lang">JSON – Kısmi İade</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "order_id": "ORDER-67890",
+  "transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "amount": 100.00
+}</code></pre>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="code-block-wrapper">
+              <div class="code-block-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-btn"><span>⎘</span> Kopyala</button>
+              </div>
+              <pre class="language-json"><code class="language-json">{
+  "payload": {
+    "transaction_id": "g7h8i9j0-k1l2-3456-mnop-qr7890123456",
+    "order_id": "ORDER-67890",
+    "original_transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "amount_info": {
+      "amount": 250.00,
+      "currency": "TRY",
+      "installment": 1,
+      "original_amount": 250.00,
+      "original_currency": "TRY",
+      "exchange_rate": 1,
+      "base_amount": 250.00,
+      "base_currency": "TRY"
+    },
+    "gateway_response": {
+      "code": "00",
+      "message_tr": "İADE BAŞARILI",
+      "message_en": "REFUND APPROVED"
+    },
+    "date": "2024-01-16T10:00:00Z"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

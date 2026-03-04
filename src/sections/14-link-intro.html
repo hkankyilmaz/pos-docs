@@ -1,0 +1,82 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       LİNK İŞLEMLERİ – GENEL BAKIŞ
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="link-intro" class="doc-section">
+    <span class="section-tag">Link İşlemleri</span>
+    <h2 class="section-title">Link İşlemleri – Genel Bakış</h2>
+    <p class="section-desc">
+      Payment Link Service; ödeme oturumları, ödeme linkleri ve koleksiyonlar aracılığıyla
+      müşterilere bağlantı tabanlı ödeme akışları sunar. Üç farklı yöntem mevcuttur:
+    </p>
+
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="card-label">Ödeme Oturumu</div>
+        <div class="card-value" style="font-family:inherit;font-size:14px;font-weight:500;">
+          API Key + Hash ile oluşturulan tek kullanımlık ödeme oturumu.
+          Müşteriye session URL gönderilir, müşteri kendi bilgilerini girer.
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Ödeme Linki</div>
+        <div class="card-value" style="font-family:inherit;font-size:14px;font-weight:500;">
+          Ürün bazlı kalıcı ödeme sayfası. QR kod desteği. Çoklu kullanım ve son kullanma tarihi ayarlanabilir.
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Koleksiyon</div>
+        <div class="card-value" style="font-family:inherit;font-size:14px;font-weight:500;">
+          Müşterinin tutarı kendisinin belirlediği (min/max aralığında) serbest tutarlı ödeme linki.
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Base URL</h3>
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="card-label">Payment Link Service Base URL</div>
+        <div class="card-value"><a href="#">https://api.payment-link.example.com</a></div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">API Version Prefix</div>
+        <div class="card-value">/api/v1</div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Kimlik Doğrulama Yöntemleri</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Yöntem</th><th>Endpoint Grubu</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>X-API-Key + X-Hash</strong></td>
+          <td>Merchant endpoint'leri (<code>/merchant/*</code>, <code>/sessions</code>)</td>
+          <td>Payment Hub ile aynı hash doğrulama mekanizması</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-title">Tüm Endpoint Listesi</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Metod</th><th>Endpoint</th><th>Auth</th><th>Açıklama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="method-badge method-post">POST</span></td><td><span class="param-name">/api/v1/sessions</span></td><td>API Key + Hash</td><td>Ödeme oturumu oluştur</td></tr>
+        <tr><td><span class="method-badge method-post">POST</span></td><td><span class="param-name">/api/v1/merchant/payment-links</span></td><td>API Key + Hash</td><td>Ödeme linki oluştur</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/payment-links</span></td><td>API Key + Hash</td><td>Ödeme linklerini listele</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/payment-links/:id</span></td><td>API Key + Hash</td><td>Ödeme linkini getir</td></tr>
+        <tr><td><span class="method-badge method-put">PATCH</span></td><td><span class="param-name">/api/v1/merchant/payment-links/:id/status</span></td><td>API Key + Hash</td><td>Link durumunu güncelle</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/payment-links/:id/qr</span></td><td>API Key + Hash</td><td>QR kod görseli (PNG)</td></tr>
+        <tr><td><span class="method-badge method-post">POST</span></td><td><span class="param-name">/api/v1/merchant/collections</span></td><td>API Key + Hash</td><td>Koleksiyon oluştur</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/collections</span></td><td>API Key + Hash</td><td>Koleksiyonları listele</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/collections/:id</span></td><td>API Key + Hash</td><td>Koleksiyonu getir</td></tr>
+        <tr><td><span class="method-badge method-put">PATCH</span></td><td><span class="param-name">/api/v1/merchant/collections/:id/status</span></td><td>API Key + Hash</td><td>Koleksiyon durumunu güncelle</td></tr>
+        <tr><td><span class="method-badge method-get">GET</span></td><td><span class="param-name">/api/v1/merchant/collections/:id/qr</span></td><td>API Key + Hash</td><td>Koleksiyon QR kodu</td></tr>
+      </tbody>
+    </table>
+  </section>

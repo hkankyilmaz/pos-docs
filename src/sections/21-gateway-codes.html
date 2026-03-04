@@ -1,0 +1,88 @@
+
+  <hr class="divider" />
+
+  <!-- ═══════════════════════════════════════════════════════
+       GATEWAY RESPONSE KODLARI
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="gateway-codes" class="doc-section">
+    <span class="section-tag">Referans</span>
+    <h2 class="section-title">Gateway Response Kodları</h2>
+    <p class="section-desc">
+      Bankadan dönen yanıt kodları Payment Hub tarafından ISO 8583 standardına göre normalize edilir.
+      Tüm ödeme yanıtlarındaki <code>gateway_response.code</code> ve <code>gateway_response.message_tr</code>
+      / <code>message_en</code> alanları aşağıdaki tablodaki değerleri alır.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>
+        <code>gateway_response.code</code> değeri <strong>"00"</strong> olan işlemler başarılıdır.
+        Tanımlanamayan banka hata kodları <strong>"99"</strong> olarak döner.
+        3D Secure doğrulama başarısızlıkları <strong>"98"</strong> koduyla işaretlenir.
+      </div>
+    </div>
+
+    <table class="error-table" style="margin-top:16px;">
+      <thead>
+        <tr>
+          <th style="width:60px;">Kod</th>
+          <th style="width:260px;">Mesaj TR</th>
+          <th style="width:320px;">Mesaj EN</th>
+          <th>Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="error-code">00</span></td><td>İŞLEM BAŞARILI</td><td>APPROVED</td><td>İşlem başarıyla tamamlandı.</td></tr>
+        <tr><td><span class="error-code">01</span></td><td>BANKADAN ONAY ALINIZ</td><td>REFER TO CARD ISSUER</td><td>Banka onayı gerekiyor; kart sahibi bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">02</span></td><td>BANKADAN ONAY ALINIZ (ÖZEL DURUM)</td><td>REFER TO CARD ISSUER, SPECIAL CONDITION</td><td>Banka özel durum onayı gerekiyor.</td></tr>
+        <tr><td><span class="error-code">03</span></td><td>GEÇERSİZ ÜYE İŞYERİ</td><td>INVALID MERCHANT OR SERVICE PROVIDER</td><td>Üye işyeri banka sisteminde kapalı olabilir; sanal POS bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">04</span></td><td>KARTA EL KOYUNUZ</td><td>PICK UP CARD</td><td>Kart güvenlik nedeniyle alıkonulmalı.</td></tr>
+        <tr><td><span class="error-code">05</span></td><td>RED</td><td>DO NOT HONOR</td><td>İşlem reddedildi; kart sahibi bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">07</span></td><td>KARTA EL KOYUNUZ (ÖZEL DURUM)</td><td>PICK UP CARD, SPECIAL CONDITION</td><td>Kart özel durum nedeniyle alıkonulmalı.</td></tr>
+        <tr><td><span class="error-code">08</span></td><td>ONAY VE KİMLİK DOĞRULA</td><td>HONOR WITH IDENTIFICATION</td><td>İşlem onayı için kart sahibinin kimliği doğrulanmalı.</td></tr>
+        <tr><td><span class="error-code">10</span></td><td>KISMİ ONAY</td><td>PARTIAL APPROVAL</td><td>İşlem tutarının bir kısmı onaylandı; daha düşük tutarda işlem yapılabilir.</td></tr>
+        <tr><td><span class="error-code">11</span></td><td>VIP ONAY</td><td>VIP APPROVAL</td><td>VIP müşteri işlemi onaylandı; özel limitler uygulandı.</td></tr>
+        <tr><td><span class="error-code">12</span></td><td>GEÇERSİZ İŞLEM</td><td>INVALID TRANSACTION</td><td>İşlem geçersiz; işlem tipi veya parametreler kontrol edilmeli.</td></tr>
+        <tr><td><span class="error-code">13</span></td><td>GEÇERSİZ TUTAR</td><td>INVALID AMOUNT</td><td>İşlem tutarı geçersiz; tutar formatı veya limitleri kontrol edilmeli.</td></tr>
+        <tr><td><span class="error-code">14</span></td><td>GEÇERSİZ KART NUMARASI</td><td>INVALID CARD NUMBER</td><td>Kart numarası geçersiz.</td></tr>
+        <tr><td><span class="error-code">19</span></td><td>GİRİŞ TEKRAR EDİNİZ</td><td>RE-ENTER TRANSACTION</td><td>Geçici sistem sorunu; işlem tekrar denenebilir.</td></tr>
+        <tr><td><span class="error-code">21</span></td><td>İŞLEM YAPILMADI</td><td>NO ACTION TAKEN</td><td>İşlem gerçekleştirilemedi; sistem yanıt vermedi.</td></tr>
+        <tr><td><span class="error-code">25</span></td><td>KAYIT BULUNAMADI</td><td>UNABLE TO LOCATE RECORD</td><td>İşlem kaydı sistemde bulunamadı.</td></tr>
+        <tr><td><span class="error-code">30</span></td><td>FORMAT HATASI</td><td>FORMAT ERROR</td><td>Mesaj formatı hatalı; mesaj yapısı kontrol edilmeli.</td></tr>
+        <tr><td><span class="error-code">34</span></td><td>SAHTEKARLIKTAN ŞÜPHELENİLİYOR</td><td>FRAUD SUSPICION</td><td>İşlem sahtekarlık şüphesi nedeniyle reddedildi.</td></tr>
+        <tr><td><span class="error-code">36</span></td><td>KISITLI KART</td><td>RESTRICTED CARD</td><td>Kart kısıtlı; kart sahibi bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">38</span></td><td>PIN DENEMESİ AŞILDI</td><td>ALLOWABLE PIN TRIES EXCEEDED</td><td>PIN deneme sayısı aşıldı; kart geçici olarak bloke edildi.</td></tr>
+        <tr><td><span class="error-code">41</span></td><td>KAYIP KART</td><td>LOST CARD</td><td>Kart kayıp olarak işaretlenmiş; alıkonulmalı.</td></tr>
+        <tr><td><span class="error-code">43</span></td><td>ÇALINTI KART</td><td>STOLEN CARD</td><td>Kart çalıntı olarak işaretlenmiş; alıkonulmalı.</td></tr>
+        <tr><td><span class="error-code">51</span></td><td>YETERSİZ BAKİYE</td><td>INSUFFICIENT FUNDS</td><td>Hesapta yeterli bakiye yok; daha düşük tutarda denenebilir.</td></tr>
+        <tr><td><span class="error-code">52</span></td><td>HESAP NUMARASI BULUNAMADI</td><td>NO CHECKING ACCOUNT</td><td>Vadesiz hesap bulunamadı.</td></tr>
+        <tr><td><span class="error-code">53</span></td><td>HESAP NUMARASI BULUNAMADI</td><td>NO SAVINGS ACCOUNT</td><td>Vadeli hesap bulunamadı.</td></tr>
+        <tr><td><span class="error-code">54</span></td><td>KART SÜRESİ DOLMUŞ / SON KULLANMA TARİHİ HATALI</td><td>EXPIRED CARD / INVALID EXPIRY DATE</td><td>Kart süresi dolmuş veya son kullanma tarihi hatalı.</td></tr>
+        <tr><td><span class="error-code">55</span></td><td>HATALI PIN</td><td>INCORRECT PIN</td><td>PIN kodu hatalı.</td></tr>
+        <tr><td><span class="error-code">57</span></td><td>İŞLEME İZİN YOK</td><td>TRANSACTION NOT PERMITTED TO CARDHOLDER</td><td>Kart sahibi bu işlem tipini gerçekleştiremez.</td></tr>
+        <tr><td><span class="error-code">58</span></td><td>İŞLEME İZİN YOK</td><td>TRANSACTION NOT PERMITTED TO TERMINAL</td><td>Terminal bu işlem tipini gerçekleştiremez.</td></tr>
+        <tr><td><span class="error-code">59</span></td><td>SAHTEKARLIK ŞÜPHESİ</td><td>SUSPECTED FRAUD</td><td>İşlem sahtekarlık riski nedeniyle reddedildi.</td></tr>
+        <tr><td><span class="error-code">61</span></td><td>PARA ÇEKME TUTAR LİMİTİ AŞILDI</td><td>EXCEEDS WITHDRAWAL AMOUNT LIMIT</td><td>Para çekme limiti aşıldı; daha düşük tutarda denenebilir.</td></tr>
+        <tr><td><span class="error-code">62</span></td><td>YASAKLANMIŞ KART</td><td>RESTRICTED CARD</td><td>Kart yasaklanmış; kart sahibi bankasıyla iletişime geçilmeli.</td></tr>
+        <tr><td><span class="error-code">63</span></td><td>GÜVENLİK İHLALİ</td><td>SECURITY VIOLATION</td><td>Güvenlik ihlali tespit edildi.</td></tr>
+        <tr><td><span class="error-code">65</span></td><td>GÜNLÜK İŞLEM LİMİTİ AŞILDI</td><td>EXCEEDS WITHDRAWAL FREQUENCY LIMIT</td><td>Günlük işlem limiti aşıldı; limit ertesi gün sıfırlanır.</td></tr>
+        <tr><td><span class="error-code">75</span></td><td>PIN DENEMESİ AŞILDI</td><td>ALLOWABLE PIN TRIES EXCEEDED</td><td>PIN deneme sayısı aşıldı; kart geçici olarak bloke edildi.</td></tr>
+        <tr><td><span class="error-code">76</span></td><td>HENÜZ AKTİF OLMAYAN KART</td><td>INACTIVE CARD</td><td>Kart henüz aktif değil; aktivasyon gerekiyor.</td></tr>
+        <tr><td><span class="error-code">77</span></td><td>ORJİNAL İŞLEM VERİLERİ EŞLEŞMİYOR</td><td>ORIGINAL TRANSACTION DATA NOT MATCHED</td><td>İşlem verileri eşleşmiyor; orijinal işlem kontrol edilmeli.</td></tr>
+        <tr><td><span class="error-code">78</span></td><td>SİSTEMDE KAYITLI OLMAYAN KART</td><td>NO ACCOUNT</td><td>Kart sistemde kayıtlı değil.</td></tr>
+        <tr><td><span class="error-code">82</span></td><td>GEÇERSİZ CVV</td><td>INVALID CVV</td><td>CVV kodu hatalı.</td></tr>
+        <tr><td><span class="error-code">83</span></td><td>PIN DOĞRULAMASI YAPILAMADI</td><td>CANNOT VERIFY PIN</td><td>PIN doğrulaması yapılamadı.</td></tr>
+        <tr><td><span class="error-code">85</span></td><td>RED DEĞİL</td><td>NOT DECLINED</td><td>İşlem reddedilmedi; onay bekliyor.</td></tr>
+        <tr><td><span class="error-code">86</span></td><td>PIN KONTROLÜ YAPILAMADI</td><td>CANNOT VERIFY PIN</td><td>PIN kontrolü yapılamadı; sistem hatası oluştu.</td></tr>
+        <tr><td><span class="error-code">88</span></td><td>KRİPTO HATASI</td><td>CRYPTOGRAPHIC FAILURE</td><td>Şifreleme hatası; güvenlik doğrulaması başarısız.</td></tr>
+        <tr><td><span class="error-code">89</span></td><td>KİMLİK DOĞRULAMA BAŞARISIZ</td><td>AUTHENTICATION FAILURE</td><td>Kimlik doğrulama başarısız.</td></tr>
+        <tr><td><span class="error-code">91</span></td><td>İŞLEM BANKAYA GÖNDERİLEMEDİ</td><td>ISSUER OR SWITCH INOPERATIVE</td><td>Banka sistemi çalışmıyor; işlem tekrar denenebilir.</td></tr>
+        <tr><td><span class="error-code">92</span></td><td>İŞLEM BANKAYA GÖNDERİLEMEDİ</td><td>FINANCIAL INSTITUTION CANNOT BE FOUND FOR ROUTING</td><td>Banka yönlendirmesi yapılamadı; sistem hatası oluştu.</td></tr>
+        <tr><td><span class="error-code">93</span></td><td>KART ÜYESİNİN KAYDI YOK</td><td>TRANSACTION CANNOT BE COMPLETED - VIOLATION OF LAW</td><td>Kart üyesi kaydı bulunamadı veya yasal kısıtlama mevcut.</td></tr>
+        <tr><td><span class="error-code">95</span></td><td>EŞLEŞTİRME HATASI</td><td>RECONCILE ERROR</td><td>İşlem eşleştirme hatası; sistem kontrolü gerekiyor.</td></tr>
+        <tr><td><span class="error-code">96</span></td><td>SİSTEM HATASI</td><td>SYSTEM MALFUNCTION</td><td>Sistem hatası veya zaman aşımı; işlem tekrar denenebilir.</td></tr>
+        <tr><td><span class="error-code">98</span></td><td>3D DOĞRULAMA BAŞARISIZ</td><td>3D SECURE AUTHENTICATION FAILED</td><td>Kart sahibi 3D Secure doğrulama sürecini tamamlayamadı.</td></tr>
+        <tr><td><span class="error-code">99</span></td><td>GENEL BANKA HATASI</td><td>GENERAL BANK ERROR</td><td>Tanımlanamayan genel bir banka hatası oluştu.</td></tr>
+      </tbody>
+    </table>
+  </section>
