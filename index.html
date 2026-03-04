@@ -144,6 +144,18 @@
       </div>
     </div>
 
+    <h3 class="sub-title">Sandbox Test Kullanıcısı</h3>
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="card-label">API Key</div>
+        <div class="card-value"><code>00000000-0000-0000-0000-000000000000</code></div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Secret Key</div>
+        <div class="card-value"><code>sandbox-secret-key-for-testing-purposes-only</code></div>
+      </div>
+    </div>
+
     <div class="callout callout-info">
       <span class="callout-icon">ℹ️</span>
       <div>Tüm endpoint'ler <code>/api/v1/vpos/payments/</code> prefix'i ile başlar. Tüm istek ve yanıtlar UTF-8 kodlu JSON formatındadır.</div>
@@ -812,8 +824,8 @@ async function makePayment(body, apiKey, secretKey) {
           <td><span class="param-name">is_3d</span></td>
           <td><span class="param-type">bool</span></td>
           <td><span class="param-optional">Hayır</span></td>
-          <td><code>true</code> = 3D Secure, <code>false</code> = NonSecure (varsayılan: false)</td>
-          <td><code>false</code></td>
+          <td><code>true</code> = 3D Secure, <code>false</code> = NonSecure (varsayılan: true)</td>
+          <td><code>true</code></td>
         </tr>
         <tr>
           <td><span class="param-name">ok_url</span></td>
@@ -2357,6 +2369,18 @@ X-Hash: &lt;hash-of-transaction_id&gt;</code></pre>
       <div class="info-card">
         <div class="card-label">API Version Prefix</div>
         <div class="card-value">/api/v1</div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Sandbox Test Kullanıcısı</h3>
+    <div class="card-grid">
+      <div class="info-card">
+        <div class="card-label">API Key</div>
+        <div class="card-value"><code>00000000-0000-0000-0000-000000000000</code></div>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Secret Key</div>
+        <div class="card-value"><code>sandbox-secret-key-for-testing-purposes-only</code></div>
       </div>
     </div>
 
