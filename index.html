@@ -3168,6 +3168,28 @@ Content-Disposition: inline; filename="qr.png"
       </div>
     </div>
 
+    <h3 class="sub-title">Sandbox Kimlik Bilgileri</h3>
+    <table class="param-table">
+      <thead>
+        <tr><th>Parametre</th><th>Değer</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>API Key</td>
+          <td><code>00000000-0000-0000-0000-000000000000</code></td>
+        </tr>
+        <tr>
+          <td>Secret Key</td>
+          <td><code>sandbox-secret-key-for-testing-purposes-only</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <span class="callout-icon">⚠️</span>
+      <div>Bu kimlik bilgileri yalnızca sandbox ortamında geçerlidir. Production ortamında size özel olarak sağlanan API Key ve Secret Key kullanılmalıdır.</div>
+    </div>
+
     <h3 class="sub-title">Test Ortamı Bilgileri</h3>
     <table class="param-table">
       <thead>
@@ -3201,7 +3223,7 @@ Content-Disposition: inline; filename="qr.png"
       </div>
       <pre class="language-bash"><code class="language-bash">curl -X POST https://api.payment-hub.example.com/api/v1/vpos/payments/payment \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: your-test-api-key" \
+  -H "X-API-Key: 00000000-0000-0000-0000-000000000000" \
   -H "X-Hash: your-calculated-hash" \
   -d '{
     "transaction_type": "Auth",
