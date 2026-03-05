@@ -20,6 +20,11 @@
       Bu URL'lerde <code>application/x-www-form-urlencoded</code> POST verisi alacak şekilde hazır olunmalıdır.</div>
     </div>
 
+    <div class="callout callout-warning">
+      <span class="callout-icon">⚠️</span>
+      <div><code>html_url</code> 15 dakika geçerlidir. Süresi dolduktan sonra erişilemez.</div>
+    </div>
+
     <div class="endpoint-card">
       <div class="endpoint-header">
         <span class="method-badge method-post">POST</span>
@@ -73,7 +78,7 @@
     "transaction_id": "d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
     "order_id": "ORDER-12345",
     "html": "&lt;!DOCTYPE html&gt;&lt;html&gt;...3D Secure Form HTML...&lt;/html&gt;",
-    "html_url": "https://payment-hub.example.com/api/v1/vpos/payments/3d-secure/d4de0c6a-c51f-4aff-bf75-4989c9204bdc",
+    "html_url": "https://payment-hub.example.com/api/v1/vpos/payments/3d-secure/a8f2e4b1-7c3d-49e5-b6a0-1d2f3e4a5b6c",
     "date": "2024-01-15T14:30:00Z"
   }
 }</code></pre>
@@ -96,10 +101,11 @@
       <pre class="language-none"><code>1. Müşteri ödeme formunu doldurur
 2. Sizin sunucunuz → POST /api/v1/vpos/payments/payment  (is_3d: true, ok_url, fail_url)
 3. Payment Hub     → { success: true, payload: { transaction_id, html, html_url, ... } }
-4. Sizin sunucunuz → html içeriğini müşterinin tarayıcısında render eder
+4. Sizin sunucunuz → html_url'e yönlendirme yapar veya html içeriğini render eder
+   ⚠ html_url token-based'dir (15 dk geçerli), transaction ID içermez
 5. Tarayıcı        → Bankanın 3D sayfasına yönlendirilir
 6. Müşteri         → OTP / 3D doğrulamayı tamamlar
-7. Payment Hub     → 3D sonucunu işler ve ödemi tamamlar
+7. Payment Hub     → 3D sonucunu işler ve ödemeyi tamamlar
 8. Tarayıcı        → ok_url veya fail_url'e HTTP POST (application/x-www-form-urlencoded)</code></pre>
     </div>
   </section>
