@@ -25,7 +25,7 @@
           <strong>Parametre map'i oluşturun</strong>
           <p>İstek gövdesindeki tüm alanları string değerlerine dönüştürün:</p>
           <ul style="margin:6px 0 0 16px;font-size:14px;line-height:1.7;">
-            <li>Sayısal (float): <code>%.2f</code> formatında (örn. <code>100.00</code>)</li>
+            <li>Sayısal (int ve float): <code>%.2f</code> formatında (örn. <code>100.00</code>, <code>1.00</code>, <code>2025.00</code>)</li>
             <li>Boolean: <code>true</code> / <code>false</code> string</li>
             <li>Nested obje veya dizi: <strong>JSON string olarak serialize edilir; obje key'leri alfabetik sıraya göre sıralanır</strong> (örn. <code>{"email":"a@b.com","first_name":"John","last_name":"Doe","phone":"+90..."}</code>)</li>
             <li>Null / boş string: dahil edilmez</li>
@@ -177,8 +177,12 @@ func buildParams(body map[string]interface{}) map[string]string {
 			}
 		case float64:
 			result[k] = fmt.Sprintf("%.2f", val)
-		case int, int32, int64:
-			result[k] = fmt.Sprintf("%d", val)
+		case int:
+			result[k] = fmt.Sprintf("%.2f", float64(val))
+		case int32:
+			result[k] = fmt.Sprintf("%.2f", float64(val))
+		case int64:
+			result[k] = fmt.Sprintf("%.2f", float64(val))
 		case bool:
 			result[k] = fmt.Sprintf("%t", val)
 		case map[string]interface{}:
@@ -257,6 +261,8 @@ public class PaymentHashHelper
         {
             double d  => d.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
             float f   => f.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+            int i     => ((double)i).ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+            long l    => ((double)l).ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
             bool b    => b.ToString().ToLower(),
             string s when string.IsNullOrEmpty(s) => null,
             _         => value.ToString()
@@ -323,6 +329,8 @@ public class PaymentHashHelper {
         if (value == null) return null;
         if (value instanceof Double || value instanceof Float)
             return String.format("%.2f", value);
+        if (value instanceof Integer || value instanceof Long)
+            return String.format("%.2f", ((Number) value).doubleValue());
         if (value instanceof Boolean)
             return value.toString();
         String s = value.toString();
