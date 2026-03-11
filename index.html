@@ -285,7 +285,7 @@ X-Hash: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d906</code></
           <strong>Parametre map'i oluşturun</strong>
           <p>İstek gövdesindeki tüm alanları string değerlerine dönüştürün:</p>
           <ul style="margin:6px 0 0 16px;font-size:14px;line-height:1.7;">
-            <li>Sayısal (float): <code>%.2f</code> formatında (örn. <code>100.00</code>)</li>
+            <li>Sayısal (int ve float): <code>%.2f</code> formatında (örn. <code>100.00</code>, <code>1.00</code>, <code>2025.00</code>)</li>
             <li>Boolean: <code>true</code> / <code>false</code> string</li>
             <li>Nested obje veya dizi: <strong>JSON string olarak serialize edilir; obje key'leri alfabetik sıraya göre sıralanır</strong> (örn. <code>{"email":"a@b.com","first_name":"John","last_name":"Doe","phone":"+90..."}</code>)</li>
             <li>Null / boş string: dahil edilmez</li>
@@ -437,8 +437,12 @@ func buildParams(body map[string]interface{}) map[string]string {
 			}
 		case float64:
 			result[k] = fmt.Sprintf("%.2f", val)
-		case int, int32, int64:
-			result[k] = fmt.Sprintf("%d", val)
+		case int:
+			result[k] = fmt.Sprintf("%.2f", float64(val))
+		case int32:
+			result[k] = fmt.Sprintf("%.2f", float64(val))
+		case int64:
+			result[k] = fmt.Sprintf("%.2f", float64(val))
 		case bool:
 			result[k] = fmt.Sprintf("%t", val)
 		case map[string]interface{}:
@@ -517,6 +521,8 @@ public class PaymentHashHelper
         {
             double d  => d.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
             float f   => f.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+            int i     => ((double)i).ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+            long l    => ((double)l).ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
             bool b    => b.ToString().ToLower(),
             string s when string.IsNullOrEmpty(s) => null,
             _         => value.ToString()
@@ -583,6 +589,8 @@ public class PaymentHashHelper {
         if (value == null) return null;
         if (value instanceof Double || value instanceof Float)
             return String.format("%.2f", value);
+        if (value instanceof Integer || value instanceof Long)
+            return String.format("%.2f", ((Number) value).doubleValue());
         if (value instanceof Boolean)
             return value.toString();
         String s = value.toString();
@@ -3176,6 +3184,13 @@ Content-Disposition: inline; filename="qr.png"
       Herhangi bir CVV (3-4 haneli) ve herhangi bir son kullanma tarihi kabul edilir.
       Aşağıdaki değerler yalnızca önerilen standart test değerleridir.</div>
     </div>
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div>Tüm ödeme yanıtları <strong>HTTP 200</strong> döner. Başarılı işlemler <code>"success": true</code>,
+      başarısız işlemler <code>"success": false</code> ile ayrılır. Hata detayları <code>error.details</code> içinde
+      <code>gateway_response</code> ve <code>bank_response</code> olarak döner.</div>
+    </div>
+
     <div class="test-card-grid">
       <div class="test-card">
         <div class="tc-label">Başarılı Ödeme</div>
@@ -3186,37 +3201,37 @@ Content-Disposition: inline; filename="qr.png"
       <div class="test-card">
         <div class="tc-label">Yetersiz Bakiye</div>
         <div class="tc-number">4000 0000 0000 0002</div>
-        <div class="tc-meta">HTTP 402 &nbsp;|&nbsp; ISO: 51</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 51</div>
         <span class="tc-result result-fail">✗ YETERSİZ BAKİYE</span>
       </div>
       <div class="test-card">
         <div class="tc-label">İşlem Onaylanmadı</div>
         <div class="tc-number">4000 0000 0000 0003</div>
-        <div class="tc-meta">HTTP 402 &nbsp;|&nbsp; ISO: 05</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 05</div>
         <span class="tc-result result-fail">✗ DO NOT HONOR</span>
       </div>
       <div class="test-card">
         <div class="tc-label">Geçersiz Kart Numarası</div>
         <div class="tc-number">4000 0000 0000 0004</div>
-        <div class="tc-meta">HTTP 400 &nbsp;|&nbsp; ISO: 14</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 14</div>
         <span class="tc-result result-fail">✗ GEÇERSİZ KART</span>
       </div>
       <div class="test-card">
         <div class="tc-label">Fraud Şüphesi</div>
         <div class="tc-number">4000 0000 0000 0005</div>
-        <div class="tc-meta">HTTP 402 &nbsp;|&nbsp; ISO: 34</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 34</div>
         <span class="tc-result result-fail">✗ FRAUD ŞÜPHESİ</span>
       </div>
       <div class="test-card">
         <div class="tc-label">Sistem Hatası</div>
         <div class="tc-number">4000 0000 0000 0006</div>
-        <div class="tc-meta">HTTP 500 &nbsp;|&nbsp; ISO: 96</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 96</div>
         <span class="tc-result result-fail">✗ SİSTEM HATASI</span>
       </div>
       <div class="test-card">
         <div class="tc-label">Gateway Timeout</div>
         <div class="tc-number">4000 0000 0000 0007</div>
-        <div class="tc-meta">HTTP 504 &nbsp;|&nbsp; ISO: 91</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 91</div>
         <span class="tc-result result-fail">✗ TIMEOUT</span>
       </div>
       <div class="test-card">
@@ -3228,7 +3243,7 @@ Content-Disposition: inline; filename="qr.png"
       <div class="test-card">
         <div class="tc-label">Süresi Dolmuş Kart</div>
         <div class="tc-number">4000 0000 0000 0009</div>
-        <div class="tc-meta">HTTP 400 &nbsp;|&nbsp; ISO: 54</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 54</div>
         <span class="tc-result result-fail">✗ SÜRESİ DOLMUŞ</span>
       </div>
       <div class="test-card">
@@ -3236,6 +3251,18 @@ Content-Disposition: inline; filename="qr.png"
         <div class="tc-number">4000 0000 0000 0010</div>
         <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 00</div>
         <span class="tc-result result-success">✓ PRE-AUTH ONAY</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Döviz İşlem (USD → TRY)</div>
+        <div class="tc-number">4000 0000 0000 0011</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 00 &nbsp;|&nbsp; Kur: 42.00</div>
+        <span class="tc-result result-success">✓ USD ONAY</span>
+      </div>
+      <div class="test-card">
+        <div class="tc-label">Döviz İşlem 3D Secure (USD → TRY)</div>
+        <div class="tc-number">4000 0000 0000 0012</div>
+        <div class="tc-meta">HTTP 200 &nbsp;|&nbsp; ISO: 00 &nbsp;|&nbsp; Kur: 42.00</div>
+        <span class="tc-result result-success">✓ USD 3D ONAY</span>
       </div>
     </div>
 
